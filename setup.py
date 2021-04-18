@@ -13,8 +13,7 @@ setup(
         'joblib',
         'pandas>=1.0.3',
         'numpy>=1.18.1',
-        'sklearn',
-        'rdc'
+        'sklearn'
     ],
     zip_safe=False
 )
