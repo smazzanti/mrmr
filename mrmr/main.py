@@ -3,7 +3,6 @@ from multiprocessing import cpu_count
 import pandas as pd
 import numpy as np
 from sklearn.feature_selection import f_classif as sklearn_f_classif
-from rdc import rdc
 import warnings; warnings.filterwarnings("ignore")
 
 FLOOR = .00001
@@ -34,9 +33,6 @@ def _f_classif(X, y):
 def _corr_pearson(A, b):
     return A.corrwith(b).fillna(0.0).abs().clip(FLOOR)
 
-def _corr_rdc(A, b):
-    return A.apply(lambda col: rdc(col.to_numpy(), b.to_numpy())).fillna(0.0).abs().clip(FLOOR)
-
 #####################################################################
 # Functions for computing relevance and redundancy
 # Parallelized versions (except random_forest_classif which cannot be parallelized)
@@ -54,14 +50,10 @@ def corr_pearson(A, b):
     '''Compute Pearson correlation between DataFrame A and Series b'''
     return parallel_df(_corr_pearson, A, b)
 
-def corr_rdc(A, b):
-    '''Compute RDC correlation between DataFrame A and Series b'''
-    return parallel_df(_corr_rdc, A, b)
-
 #####################################################################
 # MRMR selection
     
-def mrmr_classif(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'max', only_same_domain = False):
+def mrmr_classif(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'mean', only_same_domain = False):
     '''
     Do MRMR selection on a set of data.
     
@@ -70,7 +62,7 @@ def mrmr_classif(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'max'
         y: (pandas.Series) A Series containing the (categorical) target variable.
         K: (int) Number of features to select.
         relevance: (str) Name of relevance method. Supported: 'f' (f-statistic), 'rf' (random forest).
-        redundancy: (str) Name of redundancy method. Supported: 'c' (Pearson correlation), 'rdc' (randomized dependent coefficient)
+        redundancy: (str) Name of redundancy method. Supported: 'c' (Pearson correlation)
         denominator: (str) Name of synthesis function to apply to the denominator. Supported: 'max', 'mean'
         only_same_domain: (bool) If False, all the necessary correlation coefficients are computed.
             If True, only features belonging to the same domain are compared.
@@ -86,7 +78,6 @@ def mrmr_classif(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'max'
         'f': f_classif, 
         'rf': random_forest_classif,
         'c': corr_pearson,
-        'rdc': corr_rdc,
         'mean': np.mean,
         'max': np.max
     }
