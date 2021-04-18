@@ -1,7 +1,7 @@
 # mrmr 
 *(Minimum-Redundancy-Maximum-Relevance)*
 
-**mrmr** is a "minimal optimal" *feature selection* algorithm, meaning that it seeks to find a feature set giving best possible
+**mrmr** is a "minimal optimal" **feature selection** algorithm, meaning that it seeks to find a feature set giving best possible
 classification, given a (small) number of features.
 
 ## How to install
