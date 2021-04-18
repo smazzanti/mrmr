@@ -61,7 +61,7 @@ def corr_rdc(A, b):
 #####################################################################
 # MRMR selection
     
-def mrmr_classif(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'max', only_same_category = False):
+def mrmr_classif(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'max', only_same_domain = False):
     '''
     Do MRMR selection on a set of data.
     
@@ -72,6 +72,11 @@ def mrmr_classif(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'max'
         relevance: (str) Name of relevance method. Supported: 'f' (f-statistic), 'rf' (random forest).
         redundancy: (str) Name of redundancy method. Supported: 'c' (Pearson correlation), 'rdc' (randomized dependent coefficient)
         denominator: (str) Name of synthesis function to apply to the denominator. Supported: 'max', 'mean'
+        only_same_domain: (bool) If False, all the necessary correlation coefficients are computed.
+            If True, only features belonging to the same domain are compared.
+            Domain is defined by the string preceding the first underscore:
+            for instance "cusinfo_age" and "cusinfo_income" belong to the same domain,
+            whereas "age" and "income" don't.
         
     Returns:
         (list) List of K names of selected features (sorted by importance).
@@ -113,7 +118,7 @@ def mrmr_classif(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'max'
 
             last_selected = selected[-1]
             
-            if only_same_category:
+            if only_same_domain:
                 not_selected_subset = [c for c in not_selected if c.split('_')[0] == last_selected.split('_')[0]]
             else:
                 not_selected_subset = not_selected
