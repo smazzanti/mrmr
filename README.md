@@ -1,15 +1,15 @@
-# mrmr (*Minimum-Redundancy-Maximum-Relevance*)
-*Feature selection algorithm*
+# mrmr 
+*(Minimum-Redundancy-Maximum-Relevance)*
 
-**mrmr** is a "minimal optimal" feature selection algorithm, meaning that it seeks to find a feature set giving best possible
-classification, given a (usually small) number of features.
+**mrmr** is a "minimal optimal" *feature selection* algorithm, meaning that it seeks to find a feature set giving best possible
+classification, given a (small) number of features.
 
 ## How to install
 
 You can install **mrmr** in your environment via:
 
 <pre>
-!pip install git+https://github.com/smazzanti/mrmr
+pip install git+https://github.com/smazzanti/mrmr
 </pre>
 
 ## How to use
