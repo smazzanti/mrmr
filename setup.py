@@ -11,7 +11,6 @@ setup(
     packages=['mrmr'],
     install_requires=[
         'joblib',
-        'multiprocessing',
         'pandas>=1.0.3',
         'numpy>=1.18.1',
         'sklearn',
