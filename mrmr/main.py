@@ -2,6 +2,7 @@ from joblib import Parallel, delayed
 from multiprocessing import cpu_count
 import pandas as pd
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import f_classif as sklearn_f_classif
 import warnings; warnings.filterwarnings("ignore")
 
