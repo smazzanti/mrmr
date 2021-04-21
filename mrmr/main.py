@@ -2,9 +2,10 @@ from joblib import Parallel, delayed
 from multiprocessing import cpu_count
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+import category_encoders as ce
 from sklearn.feature_selection import f_classif as sklearn_f_classif
 from sklearn.feature_selection import f_regression as sklearn_f_regression
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 import warnings; warnings.filterwarnings("ignore")
 
 FLOOR = .00001
@@ -70,9 +71,28 @@ def corr_pearson(A, b):
     return parallel_df(_corr_pearson, A, b)
 
 #####################################################################
+
+def encode_df(X, y, cat_features, cat_encoding):
+    
+    ENCODERS = {
+        'leave_one_out': ce.LeaveOneOutEncoder(cols = cat_features, handle_missing = 'return_nan'),
+        'james_stein': ce.JamesSteinEncoder(cols = cat_features, handle_missing = 'return_nan'),
+        'target': ce.TargetEncoder(cols = cat_features, handle_missing = 'return_nan')
+    }
+    
+    X = ENCODERS[cat_encoding].fit_transform(X, y)
+    
+    return X
+    
+#####################################################################
 # MRMR selection
 
-def _mrmr_base(X, y, K, func_relevance, func_redundancy, func_denominator, only_same_domain = False):
+def _mrmr_base(
+    X, y, K, 
+    func_relevance, func_redundancy, func_denominator, 
+    cat_features = None, cat_encoding = 'leave_one_out',
+    only_same_domain = False
+):
     '''
     Do MRMR selection.
     
@@ -83,6 +103,8 @@ def _mrmr_base(X, y, K, func_relevance, func_redundancy, func_denominator, only_
         func_relevance: (func) Relevance function.
         func_redundancy: (func) Redundancy function.
         func_denominator: (func) Synthesis function to apply to the denominator.
+        cat_features: (list) List of categorical features. If None, all string columns will be encoded
+        cat_encoding: (str) Name of categorical encoding. Supported: 'leave_one_out', 'james_stein', 'target'
         only_same_domain: (bool) If False, all the necessary correlation coefficients are computed.
             If True, only features belonging to the same domain are compared.
             Domain is defined by the string preceding the first underscore:
@@ -92,9 +114,12 @@ def _mrmr_base(X, y, K, func_relevance, func_redundancy, func_denominator, only_
         (list) List of K names of selected features (sorted by importance).
     '''
     
+    # encode categorical features
+    X = encode_df(X, y, cat_features = cat_features, cat_encoding = cat_encoding)
+            
     # compute relevance
     rel = func_relevance(X, y)
-    
+            
     # keep only columns that have positive relevance
     columns = rel[rel.fillna(0) > 0].index.to_list()
     K = min(K, len(columns))
@@ -135,7 +160,12 @@ def _mrmr_base(X, y, K, func_relevance, func_redundancy, func_denominator, only_
         
     return selected
     
-def mrmr_classif(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'mean', only_same_domain = False):
+def mrmr_classif(
+    X, y, K, 
+    relevance = 'f', redundancy = 'c', denominator = 'mean', 
+    cat_features = None, cat_encoding = 'leave_one_out',
+    only_same_domain = False
+):
     '''
     Do MRMR feature selection on classification task.
     
@@ -152,6 +182,8 @@ def mrmr_classif(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'mean
         denominator: (str or function) Synthesis function to apply to the denominator of MRMR score.
             If function, it should take an iterable as input and return a scalar.
             If string, name of method, supported: 'max', 'mean'
+        cat_features: (list) List of categorical features. If None, all string columns will be encoded
+        cat_encoding: (str) Name of categorical encoding. Supported: 'leave_one_out', 'james_stein', 'target'
         only_same_domain: (bool) If False, all the necessary correlation coefficients are computed.
             If True, only features belonging to the same domain are compared.
             Domain is defined by the string preceding the first underscore:
@@ -174,9 +206,19 @@ def mrmr_classif(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'mean
     func_redundancy = FUNCS[redundancy] if redundancy in FUNCS.keys() else redundancy
     func_denominator = FUNCS[denominator] if denominator in FUNCS.keys() else denominator
     
-    return _mrmr_base(X, y, K, func_relevance, func_redundancy, func_denominator, only_same_domain = False)
+    return _mrmr_base(
+        X, y, K, 
+        func_relevance, func_redundancy, func_denominator, 
+        cat_features, cat_encoding,
+        only_same_domain
+    )
         
-def mrmr_regression(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'mean', only_same_domain = False):
+def mrmr_regression(
+    X, y, K, 
+    relevance = 'f', redundancy = 'c', denominator = 'mean', 
+    cat_features = None, cat_encoding = 'leave_one_out',
+    only_same_domain = False
+):
     '''
     Do MRMR feature selection on regression task.
     
@@ -193,6 +235,8 @@ def mrmr_regression(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'm
         denominator: (str or function) Synthesis function to apply to the denominator of MRMR score.
             If function, it should take an iterable as input and return a scalar.
             If string, name of method, supported: 'max', 'mean'
+        cat_features: (list) List of categorical features. If None, all string columns will be encoded
+        cat_encoding: (str) Name of categorical encoding. Supported: 'leave_one_out', 'james_stein', 'target'
         only_same_domain: (bool) If False, all the necessary correlation coefficients are computed.
             If True, only features belonging to the same domain are compared.
             Domain is defined by the string preceding the first underscore:
@@ -215,4 +259,9 @@ def mrmr_regression(X, y, K, relevance = 'f', redundancy = 'c', denominator = 'm
     func_redundancy = FUNCS[redundancy] if redundancy in FUNCS.keys() else redundancy
     func_denominator = FUNCS[denominator] if denominator in FUNCS.keys() else denominator
     
-    return _mrmr_base(X, y, K, func_relevance, func_redundancy, func_denominator, only_same_domain = False)
+    return _mrmr_base(
+        X, y, K, 
+        func_relevance, func_redundancy, func_denominator, 
+        cat_features, cat_encoding,
+        only_same_domain
+    )
