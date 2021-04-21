@@ -13,7 +13,8 @@ setup(
         'joblib',
         'pandas>=1.0.3',
         'numpy>=1.18.1',
-        'sklearn'
+        'sklearn',
+        'category_encoders'
     ],
     zip_safe=False
 )
