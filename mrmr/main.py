@@ -7,6 +7,7 @@ from sklearn.feature_selection import f_classif as sklearn_f_classif
 from sklearn.feature_selection import f_regression as sklearn_f_regression
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 import warnings; warnings.filterwarnings("ignore")
+import tqdm
 
 FLOOR = .00001
 
@@ -130,7 +131,7 @@ def _mrmr_base(
     selected = []
     not_selected = columns.copy()
     
-    for i in range(K):
+    for i in tqdm.tqdm(range(K)):
         
         # compute score numerator
         score_numerator = rel.loc[not_selected]
