@@ -10,6 +10,7 @@ setup(
     license='MIT',
     packages=['mrmr'],
     install_requires=[
+        'jinja2',
         'tqdm',
         'joblib',
         'pandas>=1.0.3',
