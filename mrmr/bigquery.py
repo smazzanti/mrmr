@@ -125,11 +125,12 @@ def mrmr_classif(
     Return selected (numeric) columns for a classification problem, using MRMR algorithm (https://arxiv.org/pdf/1908.05376.pdf).
 
     Args:
-        table_id: (str) Name of table, e.g. 'w3-dp-prod-advanced-analytics.BDA_FEATURE_PROD.T_WEEKLY_MASTER_TABLE_STBT_20201227'.
-        target_column: (str) Name of target column
-        numeric_columns: (list) Names of numeric columns to be ranked
-        K: (int) Number of columns to select. It only makes sense if K << len(numeric_columns)
-        only_same_domain: (bool) If True, compute correlation between each feature and features in the same category (where category is defined by the string before the first underscore)
+        table_id: (str) Unique ID of BigQuery table.
+        target_column: (str) Name of target column.
+        numeric_columns: (list) Names of numeric columns to be ranked.
+        K: (int) Number of columns to select. It only makes sense if K << len(numeric_columns).
+        only_same_domain: (bool) If True, compute correlation between each feature and features in the same domain (where domain is defined by the string before the first underscore).
+        
     Returns:
         selected: (list) Ranked columns, up to K-th column.
     '''
