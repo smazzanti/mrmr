@@ -339,7 +339,7 @@ def mrmr_classif(
     denominator='mean',
     only_same_domain=False
 ):
-    """MRMR feature selection for a classification task
+    """MRMR selection for classification task
 
     Parameters
     ----------
@@ -400,7 +400,7 @@ def mrmr_regression(
     denominator='mean',
     only_same_domain=False
 ):
-    """MRMR feature selection for a regression task
+    """MRMR selection for classification task
 
     Parameters
     ----------
