@@ -1,6 +1,8 @@
 import jinja2
+import numpy as np
 import pandas as pd
 from tqdm import tqdm
+
 
 def get_numeric_columns(bq_client, table_id):
     schema = bq_client.get_table(table_id).schema
@@ -112,32 +114,63 @@ FROM
     return corr
 
 
-def mrmr_classif(
+def f_regression(bq_client, table_id, target_column, numeric_columns=None):
+
+    if numeric_columns is None:
+        numeric_columns = [column for column in get_numeric_columns(bq_client, table_id) if column != target_column]
+
+    jinja_query = """
+    {% set COLUMNS = numeric_columns%}
+    SELECT
+      {% for COLUMN in COLUMNS -%}
+      COUNTIF(target_column IS NOT NULL AND {{COLUMN}} IS NOT NULL) AS {{COLUMN}}{% if not loop.last %},{% endif %}
+      {% endfor -%}
+    FROM 
+      table_id
+            """ \
+        .replace('table_id', table_id) \
+        .replace('target_column', target_column) \
+        .replace('numeric_columns', str(numeric_columns))
+
+    corr_coef = correlation(bq_client, table_id, target_column, numeric_columns)
+
+    n = bq_client.query(query=jinja2.Template(jinja_query).render()).to_dataframe().iloc[0,:]
+    n.name = target_column
+
+    deg_of_freedom = n - 1
+    corr_coef_squared = corr_coef ** 2
+    f = corr_coef_squared / (1 - corr_coef_squared) * deg_of_freedom
+
+    return f
+
+
+def mrmr_base(
+    task,
     bq_client,
-    table_id, 
-    target_column, 
-    K, 
-    numeric_columns=None, 
+    table_id,
+    target_column,
+    K,
+    numeric_columns=None,
+    func_denominator='mean',
     only_same_domain=False
 ):
-
-    '''
-    Return selected (numeric) columns for a classification problem, using MRMR algorithm (https://arxiv.org/pdf/1908.05376.pdf).
-
-    Args:
-        table_id: (str) Name of table, e.g. 'w3-dp-prod-advanced-analytics.BDA_FEATURE_PROD.T_WEEKLY_MASTER_TABLE_STBT_20201227'.
-        target_column: (str) Name of target column
-        numeric_columns: (list) Names of numeric columns to be ranked
-        K: (int) Number of columns to select. It only makes sense if K << len(numeric_columns)
-        only_same_domain: (bool) If True, compute correlation between each feature and features in the same category (where category is defined by the string before the first underscore)
-    Returns:
-        selected: (list) Ranked columns, up to K-th column.
-    '''
 
     FLOOR = .00001
 
     # compute f statistic for all columns
-    f = f_classif(bq_client, table_id, target_column, numeric_columns=None)
+    if task == 'classif':
+        f = f_classif(bq_client, table_id, target_column, numeric_columns)
+    elif task == 'regression':
+        f = f_regression(bq_client, table_id, target_column, numeric_columns)
+    else:
+        raise #
+
+    if func_denominator == 'mean':
+        func_denominator = np.mean
+    elif func_denominator == 'max':
+        func_denominator = np.max
+    else:
+        raise #
 
     # keep only features that have positive F-statistic
     numeric_columns = f[f.fillna(0) > 0].index.to_list()
@@ -162,18 +195,17 @@ def mrmr_classif(
             else:
                 not_selected_subset = not_selected
 
-            # update correlation matrix (compute correlation coefficients between 
-            # last selected feature and other features)
+            # update correlation matrix (compute correlation coefficients between last selected feature and other features)
             if not_selected_subset:
                 corr.loc[not_selected_subset, last_selected] = correlation(
-                    bq_client,
+                    bq_client=bq_client,
                     table_id=table_id,
                     target_column=last_selected,
                     numeric_columns=not_selected_subset
                 ).fillna(FLOOR).abs().clip(FLOOR)
 
             # denominator is max correlation between feature and features that have been selected previously
-            score_denominator = corr.loc[not_selected, selected].mean(axis=1).replace(1.0, float('Inf'))
+            score_denominator = corr.loc[not_selected, selected].apply(func_denominator, axis=1).replace(1.0, float('Inf'))
 
         # score is basically f / max(correlation). then, select feature having highest score
         score = score_numerator / score_denominator
@@ -181,4 +213,80 @@ def mrmr_classif(
         selected.append(best)
         not_selected.remove(best)
 
+    return selected
+
+
+def mrmr_classif(
+    bq_client,
+    table_id, 
+    target_column, 
+    K,
+    numeric_columns=None,
+    func_denominator='mean',
+    only_same_domain=False
+):
+    '''
+    Return selected (numeric) columns for a classification problem, using MRMR algorithm (https://arxiv.org/pdf/1908.05376.pdf).
+
+    Args:
+        bq_client:
+        table_id:
+        target_column:
+        K:
+        numeric_columns:
+        func_denominator:
+        only_same_domain:
+
+    Returns:
+        selected: (list) Ranked columns, up to K-th column.
+    '''
+
+    selected = mrmr_base(
+        task='classif',
+        bq_client=bq_client,
+        table_id=table_id,
+        target_column=target_column,
+        K=K,
+        numeric_columns=numeric_columns,
+        func_denominator=func_denominator,
+        only_same_domain=only_same_domain
+    )
+    return selected
+
+
+def mrmr_regression(
+    bq_client,
+    table_id,
+    target_column,
+    K,
+    numeric_columns=None,
+    func_denominator='mean',
+    only_same_domain=False
+):
+    '''
+    Return selected (numeric) columns for a regression problem, using MRMR algorithm (https://arxiv.org/pdf/1908.05376.pdf).
+
+    Args:
+        bq_client:
+        table_id:
+        target_column:
+        K:
+        numeric_columns:
+        func_denominator:
+        only_same_domain:
+
+    Returns:
+        selected: (list) Ranked columns, up to K-th column.
+    '''
+
+    selected = mrmr_base(
+        task='regression',
+        bq_client=bq_client,
+        table_id=table_id,
+        target_column=target_column,
+        K=K,
+        numeric_columns=numeric_columns,
+        func_denominator=func_denominator,
+        only_same_domain=only_same_domain
+    )
     return selected
