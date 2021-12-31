@@ -7,7 +7,7 @@ from sklearn.feature_selection import f_classif as sklearn_f_classif
 from sklearn.feature_selection import f_regression as sklearn_f_regression
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 import warnings; warnings.filterwarnings("ignore")
-import tqdm
+from tqdm import tqdm
 
 FLOOR = .00001
 
@@ -95,7 +95,7 @@ def _mrmr_base(
     only_same_domain = False
 ):
     '''
-    Do MRMR selection.
+    Do MRMR selection. Either classification or regression, depending on the parameters.
     
     Args:
         X: (pandas.DataFrame) A Dataframe consisting of numeric features only.
@@ -131,7 +131,7 @@ def _mrmr_base(
     selected = []
     not_selected = columns.copy()
     
-    for i in tqdm.tqdm(range(K)):
+    for i in tqdm(range(K)):
         
         # compute score numerator
         score_numerator = rel.loc[not_selected]
