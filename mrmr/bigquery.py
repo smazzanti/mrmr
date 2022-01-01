@@ -1,7 +1,6 @@
 import jinja2
 import numpy as np
-import pandas as pd
-from tqdm import tqdm
+from .main import mrmr_base
 
 
 def get_numeric_columns(bq_client, table_id):
@@ -59,7 +58,7 @@ def groupstats2fstat(avg, var, n):
     return f
 
 
-def f_classif(bq_client, table_id, target_column, numeric_columns=None):
+def f_classif(target_column, features, bq_client, table_id):
     """Compute F-statistic of one (discrete) target column and many (discrete or continuous) numeric columns of a BigQuery table
 
     Parameters
@@ -74,19 +73,16 @@ def f_classif(bq_client, table_id, target_column, numeric_columns=None):
     target_column: str
         Name of target column.
 
-    numeric_columns: list of str (optional, default=None)
-        List of numeric column names. If not specified, all numeric columns (integer and float) are used.
+    features: list of str
+        List of numeric column names.
 
     Returns
     -------
     f: pandas.Series of shape (n_variables, )
         F-statistic of each numeric column grouped by the target column.
     """
-    if numeric_columns is None:
-        numeric_columns = [column for column in get_numeric_columns(bq_client, table_id) if column.upper() != target_column.upper()]
-
     jinja_query = """
-{% set COLUMNS = numeric_columns%}
+{% set COLUMNS = features%}
 SELECT 
   target_column,
   {% for COLUMN in COLUMNS -%}
@@ -99,7 +95,7 @@ GROUP BY
     """\
         .replace('table_id', table_id)\
         .replace('target_column', target_column)\
-        .replace('numeric_columns', str(numeric_columns))
+        .replace('features', str(features))
 
     avg = bq_client.query(
         query=jinja2.Template(jinja_query.replace('METRIC', 'AVG')).render()
@@ -119,7 +115,7 @@ GROUP BY
     return f
 
 
-def correlation(bq_client, table_id, target_column, numeric_columns=None):
+def correlation(target_column, features, bq_client, table_id):
     """Compute (Pearson) correlation between one numeric target column and many numeric columns of a BigQuery table
 
     Parameters
@@ -134,19 +130,16 @@ def correlation(bq_client, table_id, target_column, numeric_columns=None):
     target_column: str
         Name of target column.
 
-    numeric_columns: list of str (optional, default=None)
-        List of numeric column names. If not specified, all numeric columns (integer and float) are used.
-
+    features: list of str
+        List of numeric column names.
+        
     Returns
     -------
     corr: pandas.Series of shape (n_variables, )
         Correlation between each column and the target column.
     """
-    if numeric_columns is None:
-        numeric_columns = [column for column in get_numeric_columns(bq_client, table_id) if column.upper() != target_column.upper()]
-
     jinja_query = """
-{% set COLUMNS = numeric_columns%}
+{% set COLUMNS = features%}
 SELECT
   {% for COLUMN in COLUMNS -%}
   CORR(target_column, {{COLUMN}}) AS {{COLUMN}}{% if not loop.last %},{% endif %}
@@ -156,7 +149,7 @@ FROM
     """ \
         .replace('table_id', table_id) \
         .replace('target_column', target_column) \
-        .replace('numeric_columns', str(numeric_columns))
+        .replace('features', str(features))
 
     corr = bq_client.query(query=jinja2.Template(jinja_query).render()).to_dataframe().iloc[0,:]
     corr.name = target_column
@@ -164,7 +157,7 @@ FROM
     return corr
 
 
-def f_regression(bq_client, table_id, target_column, numeric_columns=None):
+def f_regression(target_column, features, bq_client, table_id):
     """Compute F-statistic between one numeric target column and many numeric columns of a BigQuery table
 
     F-statistic is actually obtained from the Pearson's correlation coefficient through the following formula:
@@ -183,19 +176,16 @@ def f_regression(bq_client, table_id, target_column, numeric_columns=None):
     target_column: str
         Name of target column.
 
-    numeric_columns: list of str (optional, default=None)
-        List of numeric column names. If not specified, all numeric columns (integer and float) are used.
-
+    features: list of str
+        List of numeric column names.
+    
     Returns
     -------
     f: pandas.Series of shape (n_variables, )
         F-statistic between each column and the target column.
     """
-    if numeric_columns is None:
-        numeric_columns = [column for column in get_numeric_columns(bq_client, table_id) if column.upper() != target_column.upper()]
-
     jinja_query = """
-{% set COLUMNS = numeric_columns%}
+{% set COLUMNS = features%}
 SELECT
   {% for COLUMN in COLUMNS -%}
   COUNTIF(target_column IS NOT NULL AND {{COLUMN}} IS NOT NULL) AS {{COLUMN}}{% if not loop.last %},{% endif %}
@@ -205,9 +195,9 @@ FROM
     """ \
         .replace('table_id', table_id) \
         .replace('target_column', target_column) \
-        .replace('numeric_columns', str(numeric_columns))
+        .replace('features', str(features))
 
-    corr_coef = correlation(bq_client, table_id, target_column, numeric_columns)
+    corr_coef = correlation(target_column=target_column, features=features, bq_client=bq_client, table_id=table_id)
 
     n = bq_client.query(query=jinja2.Template(jinja_query).render()).to_dataframe().iloc[0,:]
     n.name = target_column
@@ -219,133 +209,12 @@ FROM
     return f
 
 
-def mrmr_base(
-    task,
-    bq_client,
-    table_id,
-    target_column,
-    K,
-    numeric_columns=None,
-    denominator='mean',
-    only_same_domain=False
-):
-    """MRMR selection
-
-    Parameters
-    ----------
-    task: str
-        Type of task. It should be one of ['classif', 'regression'].
-
-    bq_client: google.cloud.bigquery.Client
-        Google API's Client, already initialized with OAuth2 Credentials.
-
-    table_id: str
-        Unique ID of a Bigquery table, formatted as 'project_name.dataset_name.table_name'.
-        Example: 'bigquery-public-data.baseball.games_wide'
-
-    target_column: str
-        Name of target column.
-
-    K: int
-        Number of features to select.
-
-    numeric_columns: list of str (optional, default=None)
-        List of numeric column names. If not specified, all numeric columns (integer and float) are used.
-
-    denominator: str or callable (optional, default='mean')
-        Synthesis function to apply to the denominator of MRMR score.
-        If string, name of method. Supported: 'max', 'mean'.
-        If callable, it should take an iterable as input and return a scalar.
-
-    only_same_domain: bool (optional, default=False)
-        If False, all the necessary correlation coefficients are computed.
-        If True, only features belonging to the same domain are compared.
-        Domain is defined by the string preceding the first underscore:
-        for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
-
-    Returns
-    -------
-    selected: list of str
-        List of selected features.
-    """
-    FLOOR = .00001
-
-    # compute f statistic for all columns
-    if task == 'classif':
-        f = f_classif(bq_client, table_id, target_column, numeric_columns)
-    elif task == 'regression':
-        f = f_regression(bq_client, table_id, target_column, numeric_columns)
-    else:
-        raise ValueError("Invalid task. It should be one of ['classif', 'regression'].")
-
-    if type(denominator) == str and denominator == 'mean':
-        func_denominator = np.mean
-    elif type(denominator) == str and denominator == 'max':
-        func_denominator = np.max
-    elif type(denominator) == str:
-        raise ValueError("Invalid func_denominator. It should be one of ['mean', 'max'].")
-    else:
-        func_denominator = denominator
-
-    # keep only features that have positive F-statistic
-    numeric_columns = f[f.fillna(0) > 0].index.to_list()
-    K = min(K, len(numeric_columns))
-    f = f.loc[numeric_columns]
-
-    # init
-    corr = pd.DataFrame(FLOOR, index=numeric_columns, columns=numeric_columns)
-    selected = []
-    not_selected = numeric_columns.copy()
-    score_denominator = pd.Series(1, index=not_selected)  # at the first iteration, only f will be considered (= denominator is 1.0)
-
-    for i in tqdm(range(K)):
-
-        score_numerator = f.loc[not_selected]
-
-        if i > 0:
-            last_selected = selected[-1]
-
-            if only_same_domain:
-                not_selected_subset = [c for c in not_selected if c.split('_')[0] == last_selected.split('_')[0]]
-            else:
-                not_selected_subset = not_selected
-
-            # update correlation matrix (compute correlation coefficients between last selected feature and other features)
-            if not_selected_subset:
-                corr.loc[not_selected_subset, last_selected] = correlation(
-                    bq_client=bq_client,
-                    table_id=table_id,
-                    target_column=last_selected,
-                    numeric_columns=not_selected_subset
-                ).fillna(FLOOR).abs().clip(FLOOR)
-
-            # denominator is max correlation between feature and features that have been selected previously
-            score_denominator = corr.loc[not_selected, selected].apply(func_denominator, axis=1).replace(1.0, float('Inf'))
-
-        score = score_numerator / score_denominator
-        best = score.idxmax()
-        selected.append(best)
-        not_selected.remove(best)
-
-    return selected
-
-
-def mrmr_classif(
-    bq_client,
-    table_id,
-    target_column,
-    K,
-    numeric_columns=None,
-    denominator='mean',
-    only_same_domain=False
-):
+def mrmr_classif(bq_client, table_id, target_column, K,
+    features=None, denominator='mean', only_same_domain=False):
     """MRMR feature selection for a classification task
 
     Parameters
     ----------
-    task: str
-        Type of task. It should be one of ['classif', 'regression'].
-
     bq_client: google.cloud.bigquery.Client
         Google API's Client, already initialized with OAuth2 Credentials.
 
@@ -359,7 +228,7 @@ def mrmr_classif(
     K: int
         Number of features to select.
 
-    numeric_columns: list of str (optional, default=None)
+    features: list of str (optional, default=None)
         List of numeric column names. If not specified, all numeric columns (integer and float) are used.
 
     denominator: str or callable (optional, default='mean')
@@ -375,38 +244,37 @@ def mrmr_classif(
 
     Returns
     -------
-    selected: list of str
+    selected_features: list of str
         List of selected features.
     """
-    selected = mrmr_base(
-        task='classif',
-        bq_client=bq_client,
-        table_id=table_id,
-        target_column=target_column,
-        K=K,
-        numeric_columns=numeric_columns,
-        denominator=denominator,
-        only_same_domain=only_same_domain
-    )
-    return selected
+
+    if features is None:
+        features=get_numeric_columns(bq_client=bq_client, table_id=table_id)
+
+    if type(denominator) == str and denominator == 'mean':
+        denominator_func = np.mean
+    elif type(denominator) == str and denominator == 'max':
+        denominator_func = np.max
+    elif type(denominator) == str:
+        raise ValueError("Invalid denominator function. It should be one of ['mean', 'max'].")
+    else:
+        denominator_func = denominator
+
+    relevance_args={'bq_client': bq_client, 'table_id': table_id}
+    redundancy_args={'bq_client': bq_client, 'table_id': table_id}
+
+    selected_features = mrmr_base(target_column=target_column, features=features, K=K,
+        relevance_func=f_classif, redundancy_func=correlation, relevance_args=relevance_args,
+        redundancy_args=redundancy_args, denominator_func=denominator_func, only_same_domain=only_same_domain)
+    return selected_features
 
 
-def mrmr_regression(
-    bq_client,
-    table_id,
-    target_column,
-    K,
-    numeric_columns=None,
-    denominator='mean',
-    only_same_domain=False
-):
+def mrmr_regression(bq_client, table_id, target_column, K,
+    features=None, denominator='mean', only_same_domain=False):
     """MRMR feature selection for a regression task
 
     Parameters
     ----------
-    task: str
-        Type of task. It should be one of ['classif', 'regression'].
-
     bq_client: google.cloud.bigquery.Client
         Google API's Client, already initialized with OAuth2 Credentials.
 
@@ -420,7 +288,7 @@ def mrmr_regression(
     K: int
         Number of features to select.
 
-    numeric_columns: list of str (optional, default=None)
+    features: list of str (optional, default=None)
         List of numeric column names. If not specified, all numeric columns (integer and float) are used.
 
     denominator: str or callable (optional, default='mean')
@@ -439,14 +307,23 @@ def mrmr_regression(
     selected: list of str
         List of selected features.
     """
-    selected = mrmr_base(
-        task='regression',
-        bq_client=bq_client,
-        table_id=table_id,
-        target_column=target_column,
-        K=K,
-        numeric_columns=numeric_columns,
-        denominator=denominator,
-        only_same_domain=only_same_domain
-    )
-    return selected
+    if features is None:
+        features = get_numeric_columns(bq_client=bq_client, table_id=table_id)
+
+    if type(denominator) == str and denominator == 'mean':
+        denominator_func = np.mean
+    elif type(denominator) == str and denominator == 'max':
+        denominator_func = np.max
+    elif type(denominator) == str:
+        raise ValueError("Invalid denominator function. It should be one of ['mean', 'max'].")
+    else:
+        denominator_func = denominator
+
+    relevance_args = {'bq_client': bq_client, 'table_id': table_id}
+    redundancy_args = {'bq_client': bq_client, 'table_id': table_id}
+
+    selected_features = mrmr_base(target_column=target_column, features=features, K=K,
+        relevance_func=f_regression, redundancy_func=correlation, relevance_args=relevance_args,
+        redundancy_args=redundancy_args, denominator_func=denominator_func, only_same_domain=only_same_domain)
+
+    return selected_features

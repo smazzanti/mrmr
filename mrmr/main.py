@@ -266,3 +266,53 @@ def mrmr_regression(
         cat_features, cat_encoding,
         only_same_domain
     )
+
+
+def mrmr_base(
+    target_column, features, K,
+    relevance_func, redundancy_func,
+    relevance_args={}, redundancy_args={},
+    denominator_func=np.mean, only_same_domain=False):
+
+    FLOOR = .01
+
+    relevance = relevance_func(target_column=target_column, features=features, **relevance_args)
+    features = relevance[relevance.fillna(0) > 0].index.to_list()
+    relevance = relevance.loc[features]
+    redundancy = pd.DataFrame(FLOOR, index=features, columns=features)
+    K = min(K, len(features))
+    selected_features = []
+    not_selected_features = features.copy()
+
+    for i in tqdm(range(K)):
+
+        score_numerator = relevance.loc[not_selected_features]
+
+        if i > 0:
+
+            last_selected_feature = selected_features[-1]
+
+            if only_same_domain:
+                not_selected_features_sub = [c for c in not_selected_features if c.split('_')[0] == last_selected_feature.split('_')[0]]
+            else:
+                not_selected_features_sub = not_selected_features
+
+            if not_selected_features_sub:
+                redundancy.loc[not_selected_features_sub, last_selected_feature] = redundancy_func(
+                    target_column=last_selected_feature,
+                    features=not_selected_features_sub,
+                    **redundancy_args
+                ).fillna(FLOOR).abs().clip(FLOOR)
+                score_denominator = redundancy.loc[not_selected_features, selected_features].apply(
+                    denominator_func, axis=1).replace(1.0, float('Inf'))
+
+        else:
+            score_denominator = pd.Series(1, index=features)
+
+        score = score_numerator / score_denominator
+
+        best_feature = score.index[score.argmax()]
+        selected_features.append(best_feature)
+        not_selected_features.remove(best_feature)
+
+    return selected_features
