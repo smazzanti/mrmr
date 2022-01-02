@@ -74,9 +74,9 @@ def encode_df(X, y, cat_features, cat_encoding):
 
 
 def mrmr_classif(
-        X, y, K, features=None,
+        X, y, K,
         relevance='f', redundancy='c', denominator='mean',
-        cat_features=None, cat_encoding='leave_one_out',
+        cat_features=[], cat_encoding='leave_one_out',
         only_same_domain=False
 ):
     '''
@@ -107,17 +107,14 @@ def mrmr_classif(
         (list) List of K names of selected features (sorted by importance).
     '''
 
-    X = encode_df(X=X, y=y, cat_features=cat_features, cat_encoding=cat_encoding)
-    target_column=y.name
+    if cat_features:
+        X = encode_df(X=X, y=y, cat_features=cat_features, cat_encoding=cat_encoding)
 
-    if features is None:
-        features=X.columns.to_list()
-
-    relevance_func=f_classif if relevance=='f' else (
-        random_forest_classif if relevance=='rf' else relevance)
-    redundancy_func=correlation if redundancy == 'c' else redundancy
-    denominator_func=np.mean if denominator == 'mean' else (
-        np.max if denominator == 'max' else denominator)
+    relevance_func = f_classif if relevance=='f' else (
+                     random_forest_classif if relevance=='rf' else relevance)
+    redundancy_func = correlation if redundancy == 'c' else redundancy
+    denominator_func = np.mean if denominator == 'mean' else (
+                       np.max if denominator == 'max' else denominator)
 
     relevance_args = {'X': X, 'y': y}
     redundancy_args = {'X': X}
@@ -130,9 +127,9 @@ def mrmr_classif(
 
 
 def mrmr_regression(
-        X, y, K, features=None,
+        X, y, K,
         relevance='f', redundancy='c', denominator='mean',
-        cat_features=None, cat_encoding='leave_one_out',
+        cat_features=[], cat_encoding='leave_one_out',
         only_same_domain=False
 ):
     '''
@@ -163,17 +160,14 @@ def mrmr_regression(
         (list) List of K names of selected features (sorted by importance).
     '''
 
-    X = encode_df(X=X, y=y, cat_features=cat_features, cat_encoding=cat_encoding)
-    target_column = y.name
+    if cat_features:
+        X = encode_df(X=X, y=y, cat_features=cat_features, cat_encoding=cat_encoding)
 
-    if features is None:
-        features = X.columns.to_list()
-
-    relevance_func = f_regression if relevance == 'f' else (
-        random_forest_regression if relevance == 'rf' else relevance)
+    relevance_func = f_classif if relevance=='f' else (
+                     random_forest_classif if relevance=='rf' else relevance)
     redundancy_func = correlation if redundancy == 'c' else redundancy
     denominator_func = np.mean if denominator == 'mean' else (
-        np.max if denominator == 'max' else denominator)
+                       np.max if denominator == 'max' else denominator)
 
     relevance_args = {'X': X, 'y': y}
     redundancy_args = {'X': X}
