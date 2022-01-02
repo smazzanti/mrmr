@@ -25,6 +25,48 @@ def get_numeric_columns(bq_client, table_id):
     return numeric_columns
 
 
+def correlation(target_column, features, bq_client, table_id):
+    """Compute (Pearson) correlation between one numeric target column and many numeric columns of a BigQuery table
+
+    Parameters
+    ----------
+    bq_client: google.cloud.bigquery.Client
+        Google API's Client, already initialized with OAuth2 Credentials.
+
+    table_id: str
+        Unique ID of a Bigquery table, formatted as 'project_name.dataset_name.table_name'.
+        Example: 'bigquery-public-data.baseball.games_wide'
+
+    target_column: str
+        Name of target column.
+
+    features: list of str
+        List of numeric column names.
+
+    Returns
+    -------
+    corr: pandas.Series of shape (n_variables, )
+        Correlation between each column and the target column.
+    """
+    jinja_query = """
+{% set COLUMNS = features%}
+SELECT
+  {% for COLUMN in COLUMNS -%}
+  CORR(target_column, {{COLUMN}}) AS {{COLUMN}}{% if not loop.last %},{% endif %}
+  {% endfor -%}
+FROM 
+  table_id
+    """ \
+        .replace('table_id', table_id) \
+        .replace('target_column', target_column) \
+        .replace('features', str(features))
+
+    corr = bq_client.query(query=jinja2.Template(jinja_query).render()).to_dataframe().iloc[0, :]
+    corr.name = target_column
+
+    return corr
+
+
 def groupstats2fstat(avg, var, n):
     """Compute F-statistic of some variables across groups
 
@@ -115,48 +157,6 @@ GROUP BY
     return f
 
 
-def correlation(target_column, features, bq_client, table_id):
-    """Compute (Pearson) correlation between one numeric target column and many numeric columns of a BigQuery table
-
-    Parameters
-    ----------
-    bq_client: google.cloud.bigquery.Client
-        Google API's Client, already initialized with OAuth2 Credentials.
-
-    table_id: str
-        Unique ID of a Bigquery table, formatted as 'project_name.dataset_name.table_name'.
-        Example: 'bigquery-public-data.baseball.games_wide'
-
-    target_column: str
-        Name of target column.
-
-    features: list of str
-        List of numeric column names.
-        
-    Returns
-    -------
-    corr: pandas.Series of shape (n_variables, )
-        Correlation between each column and the target column.
-    """
-    jinja_query = """
-{% set COLUMNS = features%}
-SELECT
-  {% for COLUMN in COLUMNS -%}
-  CORR(target_column, {{COLUMN}}) AS {{COLUMN}}{% if not loop.last %},{% endif %}
-  {% endfor -%}
-FROM 
-  table_id
-    """ \
-        .replace('table_id', table_id) \
-        .replace('target_column', target_column) \
-        .replace('features', str(features))
-
-    corr = bq_client.query(query=jinja2.Template(jinja_query).render()).to_dataframe().iloc[0,:]
-    corr.name = target_column
-
-    return corr
-
-
 def f_regression(target_column, features, bq_client, table_id):
     """Compute F-statistic between one numeric target column and many numeric columns of a BigQuery table
 
@@ -209,7 +209,7 @@ FROM
     return f
 
 
-def mrmr_classif(bq_client, table_id, target_column, K,
+def mrmr_classif(bq_client, table_id, K, target_column,
     features=None, denominator='mean', only_same_domain=False):
     """MRMR feature selection for a classification task
 
@@ -249,7 +249,7 @@ def mrmr_classif(bq_client, table_id, target_column, K,
     """
 
     if features is None:
-        features=get_numeric_columns(bq_client=bq_client, table_id=table_id)
+        features = get_numeric_columns(bq_client=bq_client, table_id=table_id)
 
     if type(denominator) == str and denominator == 'mean':
         denominator_func = np.mean
@@ -260,8 +260,8 @@ def mrmr_classif(bq_client, table_id, target_column, K,
     else:
         denominator_func = denominator
 
-    relevance_args={'bq_client': bq_client, 'table_id': table_id}
-    redundancy_args={'bq_client': bq_client, 'table_id': table_id}
+    relevance_args = {'bq_client':bq_client, 'table_id':table_id, 'target_column':target_column, 'features':features}
+    redundancy_args = {'bq_client':bq_client, 'table_id':table_id, 'target_column':target_column, 'features':features}
 
     selected_features = mrmr_base(K=K, relevance_func=f_classif, redundancy_func=correlation,
                                   relevance_args=relevance_args, redundancy_args=redundancy_args,
@@ -319,8 +319,8 @@ def mrmr_regression(bq_client, table_id, target_column, K,
     else:
         denominator_func = denominator
 
-    relevance_args = {'bq_client': bq_client, 'table_id': table_id}
-    redundancy_args = {'bq_client': bq_client, 'table_id': table_id}
+    relevance_args = {'bq_client':bq_client, 'table_id':table_id, 'target_column':target_column, 'features':features}
+    redundancy_args = {'bq_client':bq_client, 'table_id':table_id, 'target_column':target_column, 'features':features}
 
     selected_features = mrmr_base(K=K, relevance_func=f_regression, redundancy_func=correlation,
                                   relevance_args=relevance_args, redundancy_args=redundancy_args,
