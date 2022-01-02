@@ -6,7 +6,6 @@ import category_encoders as ce
 from sklearn.feature_selection import f_classif as sklearn_f_classif
 from sklearn.feature_selection import f_regression as sklearn_f_regression
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from tqdm import tqdm
 from .main import mrmr_base
 
 
@@ -40,10 +39,6 @@ def _f_regression(X, y):
     return X.apply(lambda col: _f_regression_series(col, y)).fillna(0.0)
 
 
-def _correlation(X, y):
-    return X.corrwith(y).fillna(0.0)
-
-
 def f_classif(X, y):
     return parallel_df(_f_classif, X, y)
 
@@ -53,19 +48,19 @@ def f_regression(X, y):
 
 
 def random_forest_classif(X, y):
-    '''Compute feature importance of each column of DataFrame X after fitting a random forest on Series y'''
     forest = RandomForestClassifier(max_depth=5, random_state=0).fit(X.fillna(X.min().min() - 1), y)
     return pd.Series(forest.feature_importances_, index=X.columns)
 
 
 def random_forest_regression(X, y):
-    '''Compute feature importance of each column of DataFrame X after fitting a random forest on Series y'''
     forest = RandomForestRegressor(max_depth=5, random_state=0).fit(X.fillna(X.min().min() - 1), y)
     return pd.Series(forest.feature_importances_, index=X.columns)
 
 
-def correlation(X, y):
-    return parallel_df(_correlation, X, y)
+def correlation(target_column, features, X):
+    def _correlation(X, y):
+        return X.corrwith(y).fillna(0.0)
+    return parallel_df(_correlation, X.loc[:, features], X.loc[:, target_column])
 
 
 def encode_df(X, y, cat_features, cat_encoding):
@@ -135,7 +130,7 @@ def mrmr_classif(
 
 
 def mrmr_regression(
-        X, y, K,
+        X, y, K, features=None,
         relevance='f', redundancy='c', denominator='mean',
         cat_features=None, cat_encoding='leave_one_out',
         only_same_domain=False

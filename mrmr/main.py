@@ -276,7 +276,7 @@ def mrmr_base(
 
     FLOOR = .01
 
-    relevance = relevance_func(target_column=target_column, features=features, **relevance_args)
+    relevance = relevance_func(**relevance_args)
     features = relevance[relevance.fillna(0) > 0].index.to_list()
     relevance = relevance.loc[features]
     redundancy = pd.DataFrame(FLOOR, index=features, columns=features)
