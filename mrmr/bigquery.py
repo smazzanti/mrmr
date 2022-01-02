@@ -261,7 +261,7 @@ def mrmr_classif(bq_client, table_id, K, target_column,
         denominator_func = denominator
 
     relevance_args = {'bq_client':bq_client, 'table_id':table_id, 'target_column':target_column, 'features':features}
-    redundancy_args = {'bq_client':bq_client, 'table_id':table_id, 'target_column':target_column, 'features':features}
+    redundancy_args = {'bq_client':bq_client, 'table_id':table_id}
 
     selected_features = mrmr_base(K=K, relevance_func=f_classif, redundancy_func=correlation,
                                   relevance_args=relevance_args, redundancy_args=redundancy_args,
@@ -320,7 +320,7 @@ def mrmr_regression(bq_client, table_id, target_column, K,
         denominator_func = denominator
 
     relevance_args = {'bq_client':bq_client, 'table_id':table_id, 'target_column':target_column, 'features':features}
-    redundancy_args = {'bq_client':bq_client, 'table_id':table_id, 'target_column':target_column, 'features':features}
+    redundancy_args = {'bq_client':bq_client, 'table_id':table_id}
 
     selected_features = mrmr_base(K=K, relevance_func=f_regression, redundancy_func=correlation,
                                   relevance_args=relevance_args, redundancy_args=redundancy_args,

@@ -269,8 +269,8 @@ def mrmr_regression(
 
 
 def mrmr_base(K, relevance_func, redundancy_func,
-    relevance_args={}, redundancy_args={},
-    denominator_func=np.mean, only_same_domain=False):
+              relevance_args={}, redundancy_args={},
+              denominator_func=np.mean, only_same_domain=False):
 
     FLOOR = .01
 
