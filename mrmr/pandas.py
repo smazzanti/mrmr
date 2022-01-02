@@ -163,8 +163,8 @@ def mrmr_regression(
     if cat_features:
         X = encode_df(X=X, y=y, cat_features=cat_features, cat_encoding=cat_encoding)
 
-    relevance_func = f_classif if relevance=='f' else (
-                     random_forest_classif if relevance=='rf' else relevance)
+    relevance_func = f_regression if relevance=='f' else (
+                     random_forest_regression if relevance=='rf' else relevance)
     redundancy_func = correlation if redundancy == 'c' else redundancy
     denominator_func = np.mean if denominator == 'mean' else (
                        np.max if denominator == 'max' else denominator)
