@@ -263,9 +263,9 @@ def mrmr_classif(bq_client, table_id, target_column, K,
     relevance_args={'bq_client': bq_client, 'table_id': table_id}
     redundancy_args={'bq_client': bq_client, 'table_id': table_id}
 
-    selected_features = mrmr_base(target_column=target_column, features=features, K=K,
-        relevance_func=f_classif, redundancy_func=correlation, relevance_args=relevance_args,
-        redundancy_args=redundancy_args, denominator_func=denominator_func, only_same_domain=only_same_domain)
+    selected_features = mrmr_base(K=K, relevance_func=f_classif, redundancy_func=correlation,
+                                  relevance_args=relevance_args, redundancy_args=redundancy_args,
+                                  denominator_func=denominator_func, only_same_domain=only_same_domain)
     return selected_features
 
 
@@ -322,8 +322,8 @@ def mrmr_regression(bq_client, table_id, target_column, K,
     relevance_args = {'bq_client': bq_client, 'table_id': table_id}
     redundancy_args = {'bq_client': bq_client, 'table_id': table_id}
 
-    selected_features = mrmr_base(target_column=target_column, features=features, K=K,
-        relevance_func=f_regression, redundancy_func=correlation, relevance_args=relevance_args,
-        redundancy_args=redundancy_args, denominator_func=denominator_func, only_same_domain=only_same_domain)
+    selected_features = mrmr_base(K=K, relevance_func=f_regression, redundancy_func=correlation,
+                                  relevance_args=relevance_args, redundancy_args=redundancy_args,
+                                  denominator_func=denominator_func, only_same_domain=only_same_domain)
 
     return selected_features

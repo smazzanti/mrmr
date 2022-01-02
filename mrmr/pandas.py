@@ -120,11 +120,11 @@ def mrmr_classif(
         np.max if denominator == 'max' else denominator)
 
     relevance_args = {'X': X, 'y': y}
-    redundancy_args = {'X': X, 'y': y}
+    redundancy_args = {'X': X}
 
-    selected_features = mrmr_base(target_column=target_column, features=features, K=K,
-        relevance_func=relevance_func, redundancy_func=redundancy_func, relevance_args=relevance_args,
-        redundancy_args=redundancy_args, denominator_func=denominator_func, only_same_domain=only_same_domain)
+    selected_features = mrmr_base(K=K, relevance_func=relevance_func, redundancy_func=redundancy_func,
+                                  relevance_args=relevance_args, redundancy_args=redundancy_args,
+                                  denominator_func=denominator_func, only_same_domain=only_same_domain)
 
     return selected_features
 
@@ -176,10 +176,10 @@ def mrmr_regression(
         np.max if denominator == 'max' else denominator)
 
     relevance_args = {'X': X, 'y': y}
-    redundancy_args = {'X': X, 'y': y}
+    redundancy_args = {'X': X}
 
-    selected_features = mrmr_base(target_column=target_column, features=features, K=K,
-        relevance_func=relevance_func, redundancy_func=redundancy_func, relevance_args=relevance_args,
-        redundancy_args=redundancy_args, denominator_func=denominator_func, only_same_domain=only_same_domain)
+    selected_features = mrmr_base(K=K, relevance_func=relevance_func, redundancy_func=redundancy_func,
+                                  relevance_args=relevance_args, redundancy_args=redundancy_args,
+                                  denominator_func=denominator_func, only_same_domain=only_same_domain)
 
     return selected_features
