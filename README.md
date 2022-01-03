@@ -65,7 +65,7 @@ y = pd.Series(y)
 
 # select top 10 features using mRMR
 from mrmr import mrmr_classif
-selected_features = mrmr_classif(X, y, K=10)
+selected_features = mrmr_classif(X=X, y=y, K=10)
 </pre>
 
 Note: the output of mrmr_classif is a list containing K selected features. This is a **ranking**, therefore, if you want to make a further selection, take the first elements of this list.
@@ -89,7 +89,7 @@ import mrmr
 selected_features = mrmr.spark.mrmr_regression(df=df_spark, target_column="target", K=2)
 </pre>
 
-#### 2. Google BigQuery example
+#### 3. Google BigQuery example
 
 <pre>
 # initialize BigQuery client
