@@ -41,7 +41,7 @@ def groupstats2fstat(avg, var, n):
     numerator = (n * ((avg - avg_global) ** 2)).sum() / (len(n) - 1)  # between group variability
     denominator = (var * n).sum() / (n.sum() - len(n))  # within group variability
     f = numerator / denominator
-    return f
+    return f.fillna(0.0)
 
 #####################################################################
 # Functions for parallelization
