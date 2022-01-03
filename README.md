@@ -1,5 +1,5 @@
 <p>
-  <img src="./docs/img/mrmr_logo_white_bck.png" alt="drawing" width="400"/>
+<img src="./docs/img/mrmr_logo_white_bck.png" alt="drawing" width="400"/>
 </p>
 
 ## What is mRMR
