@@ -1,17 +1,16 @@
-<p>
+<p align="center">
 <img src="./docs/img/mrmr_logo_white_bck.png" alt="drawing" width="400"/>
 </p>
 
 ## What is mRMR
 
-*mRMR* *(minimum-Redundancy-Maximum-Relevance)* is a feature selection algorithm.
+*mRMR* stands for "minimum Redundancy Maximum Relevance)" and is a feature selection algorithm.
 
 ## Why is it unique
 
-The peculiarity of *mRMR* is that it is a *minimal-optimal* feature selection algorithm. 
-<br/>
+The peculiarity of *mRMR* is that it is a *minimal-optimal* feature selection algorithm. <br/>
 This means that it is designed to find the smallest relevant subset of features for a given Machine Learning task.
-<br/>
+
 On the contrary, the majority of other methods (for instance, Boruta or Positive-Feature-Importance) are *all-relevant*, 
 since they identify all the features that have some kind of relationship with the target variable.
 
@@ -39,13 +38,15 @@ git+https://github.com/smazzanti/mrmr@main#egg=mrmr
 
 ## How to use this library
 
-The library has a module for each supported tool.<br/>
+This library allows to do *mMRM* selection using different tools, depending on your needs.
+
 Currently, the following tools are supported (others will be added):
 - Pandas (in-memory)
 - Spark
 - Google BigQuery
 
-Any module has *at least* these two functions:
+The library has a module for each supported tool. <br/>
+Each module has *at least* these two functions:
 - `mrmr_classif`, for feature selection when the target variable is categorical (binary or multiclass).
 - `mrmr_regression`, for feature selection when the target variable is numeric.
 
