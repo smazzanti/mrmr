@@ -1,13 +1,47 @@
-# mrmr 
+<p align="center">
+  <img src="./docs/img/mrmr_logo_blue_bck.png" alt="drawing" width="400"/>
+</p>
 
-**mrmr** *(Minimum-Redundancy-Maximum-Relevance)* is a "**minimal optimal**" **feature selection** algorithm, meaning that it seeks to find a feature set giving the best possible predictive performance, given a fixed number of features.
+## What is mRMR
+
+*mRMR* *(minimum-Redundancy-Maximum-Relevance)* is a feature selection algorithm.
+
+## Why is it unique
+
+The peculiarity of *mRMR* is that it is a *minimal-optimal* feature selection algorithm. 
+<br/>
+This means that it is designed to find the smallest relevant subset of features for a given Machine Learning task.
+<br/>
+Whereas the majority of other methods (for instance, Boruta or Positive-Feature-Importance) are *all-relevant*, 
+since they identify all the features that have some kind of relationship with the target variable.
+
+## When to use mRMR
+
+Due to its efficiency, *mRMR* is ideal for practical ML applications, 
+where it is necessary to perform feature selection frequently and automatically, 
+in a relatively small amount of time.
+
+For instance, in **2019**, **Uber** engineers published a paper describing how they implemented 
+mRMR in their marketing machine learning platform [Maximum Relevance and Minimum Redundancy Feature Selection Methods for a Marketing Machine Learning Platform](https://eng.uber.com/research/maximum-relevance-and-minimum-redundancy-feature-selection-methods-for-a-marketing-machine-learning-platform/).
+
+## Why this library
+This library has been created to provide a **cross platform** go-to place for *mRMR*.
+Currently, the following applications are supported:
+- Pandas (in-memory)
+- Google BigQuery
+- Spark
 
 ## How to install
 
-You can install **mrmr** in your environment via:
+You can install this library in your environment via pip:
 
 <pre>
 pip install git+https://github.com/smazzanti/mrmr
+</pre>
+
+Alternatively, if you want to add it to a "requirements.txt" file, you can paste this line into the txt file:
+<pre>
+git+https://github.com/smazzanti/mrmr@main#egg=mrmr
 </pre>
 
 ## How to use
