@@ -1,5 +1,5 @@
 <p align="center">
-<img src="./docs/img/mrmr_logo_white_bck.png" alt="drawing" width="400"/>
+<img src="./docs/img/mrmr_logo_white_bck.png" alt="drawing" width="450"/>
 </p>
 
 ## What is mRMR
@@ -109,11 +109,11 @@ selected_features = mrmr.bigquery.mrmr_regression(
 
 ## Reference
 
-For an easy-going introduction to MRMR, read my article on **Towards Data Science**: [“MRMR” Explained Exactly How You Wished Someone Explained to You](https://towardsdatascience.com/mrmr-explained-exactly-how-you-wished-someone-explained-to-you-9cf4ed27458b).
+For an easy-going introduction to *mRMR*, read my article on **Towards Data Science**: [“MRMR” Explained Exactly How You Wished Someone Explained to You](https://towardsdatascience.com/mrmr-explained-exactly-how-you-wished-someone-explained-to-you-9cf4ed27458b).
 
-Also, this article describes an example of MRMR used on the world famous **MNIST** dataset: [Feature Selection: How To Throw Away 95% of Your Data and Get 95% Accuracy](https://towardsdatascience.com/feature-selection-how-to-throw-away-95-of-your-data-and-get-95-accuracy-ad41ca016877)
+Also, this article describes an example of *mRMR* used on the world famous **MNIST** dataset: [Feature Selection: How To Throw Away 95% of Your Data and Get 95% Accuracy](https://towardsdatascience.com/feature-selection-how-to-throw-away-95-of-your-data-and-get-95-accuracy-ad41ca016877)
 
-MRMR was born in **2003**, this is the original paper: [Minimum Redundancy Feature Selection From Microarray Gene Expression Data](https://www.researchgate.net/publication/4033100_Minimum_Redundancy_Feature_Selection_From_Microarray_Gene_Expression_Data).
+*mRMR* was born in **2003**, this is the original paper: [Minimum Redundancy Feature Selection From Microarray Gene Expression Data](https://www.researchgate.net/publication/4033100_Minimum_Redundancy_Feature_Selection_From_Microarray_Gene_Expression_Data).
 
 Since then, it has been used in many practical applications, due to its simplicity and effectiveness.
 For instance, in **2019**, **Uber** engineers published a paper describing how they implemented MRMR in their marketing machine learning platform [Maximum Relevance and Minimum Redundancy Feature Selection Methods for a Marketing Machine Learning Platform](https://eng.uber.com/research/maximum-relevance-and-minimum-redundancy-feature-selection-methods-for-a-marketing-machine-learning-platform/).
