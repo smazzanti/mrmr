@@ -72,14 +72,14 @@ def f_regression(target_column, features, df):
 def f_classif(target_column, features, df):
     groupby = df.replace(float('nan'), None).groupBy(target_column)
 
-    avg = groupby.agg({feature: 'mean' for feature in features}).toPandas().set_index(target_column)
-    avg.columns = features
+    avg = groupby.agg({feature: 'mean' for feature in features}).toPandas().set_index(target_column).rename(
+        lambda colname: colname[4:-1], axis=1)
 
-    var = groupby.agg({feature: 'var_pop' for feature in features}).toPandas().set_index(target_column)
-    var.columns = features
+    var = groupby.agg({feature: 'var_pop' for feature in features}).toPandas().set_index(target_column).rename(
+        lambda colname: colname[8:-1], axis=1)
 
-    n = groupby.agg({feature: 'count' for feature in features}).toPandas().set_index(target_column)
-    n.columns = features
+    n = groupby.agg({feature: 'count' for feature in features}).toPandas().set_index(target_column).rename(
+        lambda colname: colname[6:-1], axis=1)
 
     f = groupstats2fstat(avg=avg, var=var, n=n)
     f.name = target_column

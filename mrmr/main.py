@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 import warnings; warnings.filterwarnings("ignore")
 from tqdm import tqdm
 
-FLOOR = .00001
+FLOOR = .001
 
 def groupstats2fstat(avg, var, n):
     """Compute F-statistic of some variables across groups
