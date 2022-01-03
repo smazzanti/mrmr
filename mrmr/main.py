@@ -11,6 +11,38 @@ from tqdm import tqdm
 
 FLOOR = .00001
 
+def groupstats2fstat(avg, var, n):
+    """Compute F-statistic of some variables across groups
+
+    Compute F-statistic of many variables, with respect to some groups of instances.
+    For each group, the input consists of the simple average, variance and count with respect to each variable.
+
+    Parameters
+    ----------
+    avg: pandas.DataFrame of shape (n_groups, n_variables)
+        Simple average of variables within groups. Each row is a group, each column is a variable.
+
+    var: pandas.DataFrame of shape (n_groups, n_variables)
+        Variance of variables within groups. Each row is a group, each column is a variable.
+
+    n: pandas.DataFrame of shape (n_groups, n_variables)
+        Count of instances for whom variable is not null. Each row is a group, each column is a variable.
+
+    Returns
+    -------
+    f: pandas.Series of shape (n_variables, )
+        F-statistic of each variable, based on group statistics.
+
+    Reference
+    ---------
+    https://en.wikipedia.org/wiki/F-test
+    """
+    avg_global = (avg * n).sum() / n.sum()  # global average of each variable
+    numerator = (n * ((avg - avg_global) ** 2)).sum() / (len(n) - 1)  # between group variability
+    denominator = (var * n).sum() / (n.sum() - len(n))  # within group variability
+    f = numerator / denominator
+    return f
+
 #####################################################################
 # Functions for parallelization
 
