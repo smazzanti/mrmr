@@ -4,7 +4,7 @@
 
 ## What is mRMR
 
-*mRMR* stands for "minimum Redundancy Maximum Relevance)" and is a feature selection algorithm.
+**mRMR** stands for "minimum Redundancy - Maximum Relevance)" and is a feature selection algorithm.
 
 ## Why is it unique
 
@@ -111,7 +111,7 @@ selected_features = mrmr.bigquery.mrmr_regression(
 
 For an easy-going introduction to *mRMR*, read my article on **Towards Data Science**: [“MRMR” Explained Exactly How You Wished Someone Explained to You](https://towardsdatascience.com/mrmr-explained-exactly-how-you-wished-someone-explained-to-you-9cf4ed27458b).
 
-Also, this article describes an example of *mRMR* used on the world famous **MNIST** dataset: [Feature Selection: How To Throw Away 95% of Your Data and Get 95% Accuracy](https://towardsdatascience.com/feature-selection-how-to-throw-away-95-of-your-data-and-get-95-accuracy-ad41ca016877)
+Also, this article describes an example of *mRMR* used on the world famous **MNIST** dataset: [Feature Selection: How To Throw Away 95% of Your Data and Get 95% Accuracy](https://towardsdatascience.com/feature-selection-how-to-throw-away-95-of-your-data-and-get-95-accuracy-ad41ca016877).
 
 *mRMR* was born in **2003**, this is the original paper: [Minimum Redundancy Feature Selection From Microarray Gene Expression Data](https://www.researchgate.net/publication/4033100_Minimum_Redundancy_Feature_Selection_From_Microarray_Gene_Expression_Data).
 
