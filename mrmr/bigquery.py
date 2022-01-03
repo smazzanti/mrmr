@@ -3,8 +3,8 @@ import numpy as np
 from .main import mrmr_base, groupstats2fstat
 
 
-def get_numeric_columns(bq_client, table_id):
-    """Get all numeric column names from a BigQuery table
+def get_numeric_features(bq_client, table_id, target_column):
+    """Get all numeric feature names from a BigQuery table
 
     Parameters
     ----------
@@ -13,16 +13,19 @@ def get_numeric_columns(bq_client, table_id):
 
     table_id: str
         Unique ID of a Bigquery table, formatted as 'project_name.dataset_name.table_name'.
-        Example: 'bigquery-public-data.baseball.games_wide'
+        Example: 'bigquery-public-data.baseball.games_wide'.
+
+    target_column: str
+        Name of target column.
 
     Returns
     -------
-    numeric_columns : list of str
-        List of numeric column names.
+    numeric_features : list of str
+        List of numeric feature names.
     """
     schema = bq_client.get_table(table_id).schema
-    numeric_columns = [field.name for field in schema if field.field_type in ['INTEGER', 'FLOAT']]
-    return numeric_columns
+    numeric_features = [field.name for field in schema if field.field_type in ['INTEGER', 'FLOAT'] and field.name != target_column]
+    return numeric_features
 
 
 def correlation(target_column, features, bq_client, table_id):
@@ -216,7 +219,7 @@ def mrmr_classif(bq_client, table_id, K, target_column,
     """
 
     if features is None:
-        features = get_numeric_columns(bq_client=bq_client, table_id=table_id)
+        features = get_numeric_features(bq_client=bq_client, table_id=table_id, target_column=target_column)
 
     if type(denominator) == str and denominator == 'mean':
         denominator_func = np.mean
@@ -275,7 +278,7 @@ def mrmr_regression(bq_client, table_id, target_column, K,
         List of selected features.
     """
     if features is None:
-        features = get_numeric_columns(bq_client=bq_client, table_id=table_id)
+        features = get_numeric_features(bq_client=bq_client, table_id=table_id, target_column=target_column)
 
     if type(denominator) == str and denominator == 'mean':
         denominator_func = np.mean

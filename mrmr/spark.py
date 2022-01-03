@@ -3,7 +3,7 @@ import pandas as pd
 from .main import groupstats2fstat, mrmr_base
 
 
-def get_numeric_columns(df):
+def get_numeric_features(df, target_column):
     """Get all numeric column names from a Spark DataFrame
 
     Parameters
@@ -11,14 +11,17 @@ def get_numeric_columns(df):
     df: pyspark.sql.dataframe.DataFrame
         Spark DataFrame.
 
+    target_column: str
+        Name of target column.
+
     Returns
     -------
-    numeric_columns : list of str
+    numeric_features : list of str
         List of numeric column names.
     """
     numeric_dtypes = ['int', 'bigint', 'long', 'float', 'double', 'decimal']
-    numeric_columns = [column_name for column_name, column_type in df.dtypes if column_type in numeric_dtypes]
-    return numeric_columns
+    numeric_features = [column_name for column_name, column_type in df.dtypes if column_type in numeric_dtypes and column_name != target_column]
+    return numeric_features
 
 
 def correlation(target_column, features, df):
@@ -122,7 +125,7 @@ def mrmr_classif(df, K, target_column, features=None, denominator='mean', only_s
     """
 
     if features is None:
-        features = get_numeric_columns(df=df)
+        features = get_numeric_features(df=df, target_column=target_column)
 
     if type(denominator) == str and denominator == 'mean':
         denominator_func = np.mean
@@ -177,7 +180,7 @@ def mrmr_regression(df, target_column, K, features=None, denominator='mean', onl
     """
 
     if features is None:
-        features = get_numeric_columns(df=df)
+        features = get_numeric_features(df=df, target_column=target_column)
 
     if type(denominator) == str and denominator == 'mean':
         denominator_func = np.mean
