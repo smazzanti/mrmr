@@ -24,15 +24,6 @@ in a relatively small amount of time.
 For instance, in **2019**, **Uber** engineers published a paper describing how they implemented 
 mRMR in their marketing machine learning platform [Maximum Relevance and Minimum Redundancy Feature Selection Methods for a Marketing Machine Learning Platform](https://eng.uber.com/research/maximum-relevance-and-minimum-redundancy-feature-selection-methods-for-a-marketing-machine-learning-platform/).
 
-## Why this library
-This library has been created to provide a **cross platform** go-to place for *mRMR*.
-Currently, the following tools are supported:
-- Pandas (in-memory)
-- Spark
-- Google BigQuery
-
-Support for other tools will be added.
-
 ## How to install this library
 
 You can install this library in your environment via pip:
@@ -49,6 +40,11 @@ git+https://github.com/smazzanti/mrmr@main#egg=mrmr
 ## How to use this library
 
 The library has a module for each supported tool.<br/>
+Currently, the following tools are supported (others will be added):
+- Pandas (in-memory)
+- Spark
+- Google BigQuery
+
 Any module has *at least* these two functions:
 - `mrmr_classif`, for feature selection when the target variable is categorical (binary or multiclass).
 - `mrmr_regression`, for feature selection when the target variable is numeric.
@@ -68,7 +64,7 @@ y = pd.Series(y)
 
 # select top 10 features using mRMR
 from mrmr import mrmr_classif
-selected_features = mrmr_classif(X, y, K = 10)
+selected_features = mrmr_classif(X, y, K=10)
 </pre>
 
 Note: the output of mrmr_classif is a list containing K selected features. This is a **ranking**, therefore, if you want to make a further selection, take the first elements of this list.
@@ -76,11 +72,9 @@ Note: the output of mrmr_classif is a list containing K selected features. This 
 #### 2. Spark example
 
 <pre>
-# init spark session
+# create some spark data
 import pyspark
 session = pyspark.sql.SparkSession(pyspark.context.SparkContext())
-
-# make a spark dataframe
 data = [(1.0, 1.0, 1.0, 7.0, 1.5, -2.3), 
         (2.0, float('NaN'), 2.0, 7.0, 8.5, 6.7), 
         (2.0, float('NaN'), 3.0, 7.0, -2.3, 4.4),
@@ -91,7 +85,24 @@ df_spark = session.createDataFrame(data=data, schema=columns)
 
 # select top 2 features using mRMR
 import mrmr
-selected_features = mrmr.spark.mrmr_regression(df_spark, target_column="target", K=2)
+selected_features = mrmr.spark.mrmr_regression(df=df_spark, target_column="target", K=2)
+</pre>
+
+#### 2. Google BigQuery example
+
+<pre>
+# initialize BigQuery client
+from google.cloud.bigquery import Client
+bq_client = Client(credentials=your_credentials)
+
+# select top 20 features using mRMR
+import mrmr
+selected_features = mrmr.bigquery.mrmr_regression(
+    bq_client=bq_client,
+    table_id='bigquery-public-data.covid19_open_data.covid19_open_data',
+    target_column='new_deceased',
+    K=20
+)
 </pre>
 
 
