@@ -1,6 +1,6 @@
 import jinja2
 import numpy as np
-from .main import mrmr_base
+from .main import mrmr_base, groupstats2fstat
 
 
 def get_numeric_columns(bq_client, table_id):
