@@ -169,7 +169,7 @@ FROM
     n = bq_client.query(query=jinja2.Template(jinja_query).render()).to_dataframe().iloc[0,:]
     n.name = target_column
 
-    deg_of_freedom = n - 1
+    deg_of_freedom = n - 2
     corr_coef_squared = corr_coef ** 2
     f = corr_coef_squared / (1 - corr_coef_squared) * deg_of_freedom
 

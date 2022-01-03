@@ -62,7 +62,7 @@ def f_regression(target_column, features, df):
     corr_coef = correlation(target_column=target_column, features=features, df=df)
     n = notna(target_column=target_column, features=features, df=df)
 
-    deg_of_freedom = n - 1
+    deg_of_freedom = n - 2
     corr_coef_squared = corr_coef ** 2
     f = corr_coef_squared / (1 - corr_coef_squared) * deg_of_freedom
 
