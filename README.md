@@ -11,15 +11,16 @@
 The peculiarity of *mRMR* is that it is a **minimal-optimal** feature selection algorithm. <br/>
 This means it is designed to find the smallest relevant subset of features for a given Machine Learning task.
 
-On the contrary, the majority of other methods (for instance, Boruta or Positive-Feature-Importance) are **all-relevant**, 
-since they identify all the features that have some kind of relationship with the target variable.
-
-However, for a given task, it is desirable to select the minimum number of useful features, for different reasons:
+Selecting the minimum number of useful features is desirable for many reasons:
 - memory consumption,
 - time required,
 - performance,
 - explainability of results.
-This is why a minimal-optimal method such as *mrmr* is often preferable
+
+This is why a minimal-optimal method such as *mrmr* is often preferable.
+
+On the contrary, the majority of other methods (for instance, Boruta or Positive-Feature-Importance) are classified as **all-relevant**, 
+since they identify all the features that have some kind of relationship with the target variable.
 
 ## When to use mRMR
 
@@ -48,18 +49,18 @@ git+https://github.com/smazzanti/mrmr@main#egg=mrmr
 This package is designed to do *mMRM* selection through different tools, depending on your needs.
 
 Currently, the following tools are supported (others will be added):
-- Pandas (in-memory)
-- Spark
-- Google BigQuery
+- **Pandas** (in-memory)
+- **Spark**
+- **Google BigQuery**
 
-The library has a module for each supported tool. Each module has *at least* these 2 functions:
+The package has a module for each supported tool. Each module has *at least* these 2 functions:
 - `mrmr_classif`, for feature selection when the target variable is categorical (binary or multiclass).
 - `mrmr_regression`, for feature selection when the target variable is numeric.
 
 Let's see some examples.
 
 #### 1. Pandas example
-You have a Pandas DataFrame (`X`) and a series which is your target variable (`y`).
+You have a Pandas DataFrame (`X`) and a Series which is your target variable (`y`).
 You want to select the best `K` features to make predictions on `y`.
 
 <pre>
