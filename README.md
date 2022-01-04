@@ -21,7 +21,7 @@ where it is necessary to perform feature selection frequently and automatically,
 in a relatively small amount of time.
 
 For instance, in **2019**, **Uber** engineers published a paper describing how they implemented 
-mRMR in their marketing machine learning platform [Maximum Relevance and Minimum Redundancy Feature Selection Methods for a Marketing Machine Learning Platform](https://eng.uber.com/research/maximum-relevance-and-minimum-redundancy-feature-selection-methods-for-a-marketing-machine-learning-platform/).
+*mRMR* in their marketing machine learning platform [Maximum Relevance and Minimum Redundancy Feature Selection Methods for a Marketing Machine Learning Platform](https://eng.uber.com/research/maximum-relevance-and-minimum-redundancy-feature-selection-methods-for-a-marketing-machine-learning-platform/).
 
 ## How to install this library
 
