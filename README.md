@@ -4,7 +4,7 @@
 
 ## What is mRMR
 
-**mRMR** stands for "minimum Redundancy - Maximum Relevance)" and is a feature selection algorithm.
+**mRMR** stands for "minimum Redundancy - Maximum Relevance" and is a feature selection algorithm.
 
 ## Why is it unique
 
