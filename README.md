@@ -4,15 +4,22 @@
 
 ## What is mRMR
 
-**mRMR** stands for "minimum Redundancy - Maximum Relevance)" and is a feature selection algorithm.
+*mRMR*, which stands for "minimum Redundancy - Maximum Relevance", is a feature selection algorithm.
 
 ## Why is it unique
 
-The peculiarity of *mRMR* is that it is a *minimal-optimal* feature selection algorithm. <br/>
-This means that it is designed to find the smallest relevant subset of features for a given Machine Learning task.
+The peculiarity of *mRMR* is that it is a **minimal-optimal** feature selection algorithm. <br/>
+This means it is designed to find the smallest relevant subset of features for a given Machine Learning task.
 
-On the contrary, the majority of other methods (for instance, Boruta or Positive-Feature-Importance) are *all-relevant*, 
+On the contrary, the majority of other methods (for instance, Boruta or Positive-Feature-Importance) are **all-relevant**, 
 since they identify all the features that have some kind of relationship with the target variable.
+
+However, for a given task, it is desirable to select the minimum number of useful features, for different reasons:
+- memory consumption,
+- time required,
+- performance,
+- explainability of results.
+This is why a minimal-optimal method such as *mrmr* is often preferable
 
 ## When to use mRMR
 
@@ -21,11 +28,11 @@ where it is necessary to perform feature selection frequently and automatically,
 in a relatively small amount of time.
 
 For instance, in **2019**, **Uber** engineers published a paper describing how they implemented 
-mRMR in their marketing machine learning platform [Maximum Relevance and Minimum Redundancy Feature Selection Methods for a Marketing Machine Learning Platform](https://eng.uber.com/research/maximum-relevance-and-minimum-redundancy-feature-selection-methods-for-a-marketing-machine-learning-platform/).
+*mRMR* in their marketing machine learning platform [Maximum Relevance and Minimum Redundancy Feature Selection Methods for a Marketing Machine Learning Platform](https://eng.uber.com/research/maximum-relevance-and-minimum-redundancy-feature-selection-methods-for-a-marketing-machine-learning-platform/).
 
-## How to install this library
+## How to install this package
 
-You can install this library in your environment via pip:
+You can install this package in your environment via pip:
 
 <pre>
 pip install git+https://github.com/smazzanti/mrmr
@@ -36,25 +43,24 @@ Alternatively, if you want to add it to a "requirements.txt" file, you can paste
 git+https://github.com/smazzanti/mrmr@main#egg=mrmr
 </pre>
 
-## How to use this library
+## How to use this package
 
-This library allows to do *mMRM* selection using different tools, depending on your needs.
+This package is designed to do *mMRM* selection through different tools, depending on your needs.
 
 Currently, the following tools are supported (others will be added):
 - Pandas (in-memory)
 - Spark
 - Google BigQuery
 
-The library has a module for each supported tool. <br/>
-Each module has *at least* these two functions:
+The library has a module for each supported tool. Each module has *at least* these 2 functions:
 - `mrmr_classif`, for feature selection when the target variable is categorical (binary or multiclass).
 - `mrmr_regression`, for feature selection when the target variable is numeric.
 
 Let's see some examples.
 
 #### 1. Pandas example
-You have a Pandas DataFrame (**X**) and a series which is your target variable (**y**).
-You want to select the best **K** features to make predictions on **y**.
+You have a Pandas DataFrame (`X`) and a series which is your target variable (`y`).
+You want to select the best `K` features to make predictions on `y`.
 
 <pre>
 # create some pandas data
