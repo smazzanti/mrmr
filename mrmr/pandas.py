@@ -79,33 +79,56 @@ def mrmr_classif(
         cat_features=[], cat_encoding='leave_one_out',
         only_same_domain=False
 ):
-    '''
-    Do MRMR feature selection on classification task.
+    """MRMR feature selection for a classification task
 
-    Args:
-        X: (pandas.DataFrame) A Dataframe consisting of numeric features only.
-        y: (pandas.Series) A Series containing the (categorical) target variable.
-        K: (int) Number of features to select.
-        relevance: (str or function) Relevance method.
-            If function, it should take X and y as input and return a pandas.Series containing a (non-negative) score of relevance for each feature of X.
-            If string, name of method, supported: 'f' (f-statistic), 'rf' (random forest).
-        redundancy: (str or function) Redundancy method.
-            If function, it should take A and b as input and return a pandas.Series containing a (non-negative) score of redundancy for each feature of A.
-            If string, name of method, supported: 'c' (Pearson correlation)
-        denominator: (str or function) Synthesis function to apply to the denominator of MRMR score.
-            If function, it should take an iterable as input and return a scalar.
-            If string, name of method, supported: 'max', 'mean'
-        cat_features: (list) List of categorical features. If None, all string columns will be encoded
-        cat_encoding: (str) Name of categorical encoding. Supported: 'leave_one_out', 'james_stein', 'target'
-        only_same_domain: (bool) If False, all the necessary correlation coefficients are computed.
-            If True, only features belonging to the same domain are compared.
-            Domain is defined by the string preceding the first underscore:
-            for instance "cusinfo_age" and "cusinfo_income" belong to the same domain,
-            whereas "age" and "income" don't.
+    Parameters
+    ----------
+    X: pandas.DataFrame
+        A DataFrame containing all the features.
 
-    Returns:
-        (list) List of K names of selected features (sorted by importance).
-    '''
+    y: pandas.Series
+        A Series containing the (categorical) target variable.
+
+    K: int
+        Number of features to select.
+
+    features: list of str (optional, default=None)
+        List of numeric column names. If not specified, all numeric columns (integer and float) are used.
+
+    relevance: str or callable
+        Relevance method.
+        If string, name of method, supported: "f" (f-statistic), "rf" (random forest).
+        If callable, it should take "X" and "y" as input and return a pandas.Series containing a (non-negative)
+        score of relevance for each feature.
+
+    redundancy: str or callable
+        Redundancy method.
+        If string, name of method, supported: "c" (Pearson correlation).
+        If callable, it should take "X", "target_column" and "features" as input and return a pandas.Series
+        containing a score of redundancy for each feature.
+
+    denominator: str or callable (optional, default='mean')
+        Synthesis function to apply to the denominator of MRMR score.
+        If string, name of method. Supported: 'max', 'mean'.
+        If callable, it should take an iterable as input and return a scalar.
+
+    cat_features: list (optional, default=None)
+        List of categorical features. If None, all string columns will be encoded.
+
+    cat_encoding: str
+        Name of categorical encoding. Supported: 'leave_one_out', 'james_stein', 'target'.
+
+    only_same_domain: bool (optional, default=False)
+        If False, all the necessary correlation coefficients are computed.
+        If True, only features belonging to the same domain are compared.
+        Domain is defined by the string preceding the first underscore:
+        for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
+
+    Returns
+    -------
+    selected_features: list of str
+        List of selected features.
+    """
 
     if cat_features:
         X = encode_df(X=X, y=y, cat_features=cat_features, cat_encoding=cat_encoding)
@@ -132,34 +155,56 @@ def mrmr_regression(
         cat_features=[], cat_encoding='leave_one_out',
         only_same_domain=False
 ):
-    '''
-    Do MRMR feature selection on regression task.
+    """MRMR feature selection for a regression task
 
-    Args:
-        X: (pandas.DataFrame) A Dataframe consisting of numeric features only.
-        y: (pandas.Series) A Series containing the (numerical) target variable.
-        K: (int) Number of features to select.
-        relevance: (str or function) Relevance method.
-            If function, it should take X and y as input and return a pandas.Series containing a (non-negative) score of relevance for each feature of X.
-            If string, name of method, supported: 'f' (f-statistic), 'rf' (random forest).
-        redundancy: (str or function) Redundancy method.
-            If function, it should take A and b as input and return a pandas.Series containing a (non-negative) score of redundancy for each feature of A.
-            If string, name of method, supported: 'c' (Pearson correlation)
-        denominator: (str or function) Synthesis function to apply to the denominator of MRMR score.
-            If function, it should take an iterable as input and return a scalar.
-            If string, name of method, supported: 'max', 'mean'
-        cat_features: (list) List of categorical features. If None, all string columns will be encoded
-        cat_encoding: (str) Name of categorical encoding. Supported: 'leave_one_out', 'james_stein', 'target'
-        only_same_domain: (bool) If False, all the necessary correlation coefficients are computed.
-            If True, only features belonging to the same domain are compared.
-            Domain is defined by the string preceding the first underscore:
-            for instance "cusinfo_age" and "cusinfo_income" belong to the same domain,
-            whereas "age" and "income" don't.
+    Parameters
+    ----------
+    X: pandas.DataFrame
+        A DataFrame containing all the features.
 
-    Returns:
-        (list) List of K names of selected features (sorted by importance).
-    '''
+    y: pandas.Series
+        A Series containing the (categorical) target variable.
 
+    K: int
+        Number of features to select.
+
+    features: list of str (optional, default=None)
+        List of numeric column names. If not specified, all numeric columns (integer and float) are used.
+
+    relevance: str or callable
+        Relevance method.
+        If string, name of method, supported: "f" (f-statistic), "rf" (random forest).
+        If callable, it should take "X" and "y" as input and return a pandas.Series containing a (non-negative)
+        score of relevance for each feature.
+
+    redundancy: str or callable
+        Redundancy method.
+        If string, name of method, supported: "c" (Pearson correlation).
+        If callable, it should take "X", "target_column" and "features" as input and return a pandas.Series
+        containing a score of redundancy for each feature.
+
+    denominator: str or callable (optional, default='mean')
+        Synthesis function to apply to the denominator of MRMR score.
+        If string, name of method. Supported: 'max', 'mean'.
+        If callable, it should take an iterable as input and return a scalar.
+
+    cat_features: list (optional, default=None)
+        List of categorical features. If None, all string columns will be encoded.
+
+    cat_encoding: str
+        Name of categorical encoding. Supported: 'leave_one_out', 'james_stein', 'target'.
+
+    only_same_domain: bool (optional, default=False)
+        If False, all the necessary correlation coefficients are computed.
+        If True, only features belonging to the same domain are compared.
+        Domain is defined by the string preceding the first underscore:
+        for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
+
+    Returns
+    -------
+    selected_features: list of str
+        List of selected features.
+    """
     if cat_features:
         X = encode_df(X=X, y=y, cat_features=cat_features, cat_encoding=cat_encoding)
 

@@ -86,6 +86,7 @@ def mrmr_base(K, relevance_func, redundancy_func,
         List of selected features.
     """
 
+    global score_denominator
     relevance = relevance_func(**relevance_args)
     features = relevance[relevance.fillna(0) > 0].index.to_list()
     relevance = relevance.loc[features]
