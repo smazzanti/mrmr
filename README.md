@@ -46,7 +46,7 @@ git+https://github.com/smazzanti/mrmr@main#egg=mrmr
 
 ## How to use this package
 
-This package is designed to do *mMRM* selection through different tools, depending on your needs.
+This package is designed to do *mMRM* selection through different tools, depending on your needs and constraints.
 
 Currently, the following tools are supported (others will be added):
 - **Pandas** (in-memory)
