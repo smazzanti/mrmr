@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='mrmr',
-    version='0.2',
+    version='0.2.0',
     description='minimum-Redundancy-Maximum-Relevance algorithm for feature selection',
     url='https://github.com/smazzanti/mrmr',
     author='Samuele Mazzanti',
