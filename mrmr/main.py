@@ -1,9 +1,12 @@
 import pandas as pd
 import numpy as np
-import warnings; warnings.filterwarnings("ignore")
+import warnings
 from tqdm import tqdm
 
+warnings.filterwarnings("ignore")
+
 FLOOR = .001
+
 
 def groupstats2fstat(avg, var, n):
     """Compute F-statistic of some variables across groups
@@ -41,6 +44,47 @@ def groupstats2fstat(avg, var, n):
 def mrmr_base(K, relevance_func, redundancy_func,
               relevance_args={}, redundancy_args={},
               denominator_func=np.mean, only_same_domain=False):
+    """General function for mRMR algorithm.
+
+    Parameters
+    ----------
+    K: int
+        Maximum number of features to select. The length of the output is *at most* equal to K
+
+    relevance_func: callable
+        Function for computing Relevance.
+        It must return a pandas.Series containing the relevance (a number between 0 and +Inf)
+        for each feature. The index of the Series must consist of feature names.
+
+    redundancy_func: callable
+        Function for computing Redundancy.
+        It must return a pandas.Series containing the redundancy (a number between -1 and 1,
+        but note that negative numbers will be taken in absolute value) of some features (called features)
+        with respect to a variable (called target_variable).
+        It must have *at least* two parameters: "target_variable" and "features".
+        The index of the Series must consist of feature names.
+
+    relevance_args: dict (optional, default={})
+        Optional arguments for relevance_func.
+
+    redundancy_args: dict (optional, default={])
+        Optional arguments for redundancy_func.
+
+    denominator_func: callable (optional, default=numpy.mean)
+        Synthesis function to apply to the denominator of MRMR score.
+        It must take an iterable as input and return a scalar.
+
+    only_same_domain: bool (optional, default=False)
+        If False, all the necessary redundancy coefficients are computed.
+        If True, only features belonging to the same domain are compared.
+        Domain is defined by the string preceding the first underscore:
+        for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
+
+    Returns
+    -------
+    selected_features: list of str
+        List of selected features.
+    """
 
     relevance = relevance_func(**relevance_args)
     features = relevance[relevance.fillna(0) > 0].index.to_list()
@@ -59,7 +103,8 @@ def mrmr_base(K, relevance_func, redundancy_func,
             last_selected_feature = selected_features[-1]
 
             if only_same_domain:
-                not_selected_features_sub = [c for c in not_selected_features if c.split('_')[0] == last_selected_feature.split('_')[0]]
+                not_selected_features_sub = [c for c in not_selected_features if
+                                             c.split('_')[0] == last_selected_feature.split('_')[0]]
             else:
                 not_selected_features_sub = not_selected_features
 
