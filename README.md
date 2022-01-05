@@ -63,7 +63,7 @@ Let's see some examples.
 You have a Pandas DataFrame (`X`) and a Series which is your target variable (`y`).
 You want to select the best `K` features to make predictions on `y`.
 
-<pre>
+```python
 # create some pandas data
 from sklearn.datasets import make_classification
 X, y = make_classification(n_samples = 1000, n_features = 50, n_informative = 10, n_redundant = 40)
@@ -73,13 +73,13 @@ y = pd.Series(y)
 # select top 10 features using mRMR
 from mrmr import mrmr_classif
 selected_features = mrmr_classif(X=X, y=y, K=10)
-</pre>
+```
 
 Note: the output of mrmr_classif is a list containing K selected features. This is a **ranking**, therefore, if you want to make a further selection, take the first elements of this list.
 
 #### 2. Spark example
 
-<pre>
+```python
 # create some spark data
 import pyspark
 session = pyspark.sql.SparkSession(pyspark.context.SparkContext())
@@ -94,11 +94,11 @@ df_spark = session.createDataFrame(data=data, schema=columns)
 # select top 2 features using mRMR
 import mrmr
 selected_features = mrmr.spark.mrmr_regression(df=df_spark, target_column="target", K=2)
-</pre>
+```
 
 #### 3. Google BigQuery example
 
-<pre>
+```python
 # initialize BigQuery client
 from google.cloud.bigquery import Client
 bq_client = Client(credentials=your_credentials)
@@ -111,7 +111,7 @@ selected_features = mrmr.bigquery.mrmr_regression(
     target_column='new_deceased',
     K=20
 )
-</pre>
+```
 
 
 ## Reference
