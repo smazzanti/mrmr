@@ -43,7 +43,8 @@ def groupstats2fstat(avg, var, n):
 
 def mrmr_base(K, relevance_func, redundancy_func,
               relevance_args={}, redundancy_args={},
-              denominator_func=np.mean, only_same_domain=False):
+              denominator_func=np.mean, only_same_domain=False,
+              show_progress=True):
     """General function for mRMR algorithm.
 
     Parameters
@@ -80,6 +81,10 @@ def mrmr_base(K, relevance_func, redundancy_func,
         Domain is defined by the string preceding the first underscore:
         for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
 
+    show_progress: bool (optional, default=True)
+        If False, no progress bar is displayed.
+        If True, a TQDM progress bar shows the number of features processed.
+
     Returns
     -------
     selected_features: list of str
@@ -95,7 +100,7 @@ def mrmr_base(K, relevance_func, redundancy_func,
     selected_features = []
     not_selected_features = features.copy()
 
-    for i in tqdm(range(K)):
+    for i in tqdm(range(K), disable=not show_progress):
 
         score_numerator = relevance.loc[not_selected_features]
 

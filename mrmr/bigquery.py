@@ -180,7 +180,7 @@ FROM
 
 
 def mrmr_classif(bq_client, table_id, K, target_column,
-    features=None, denominator='mean', only_same_domain=False):
+    features=None, denominator='mean', only_same_domain=False, show_progress=True):
     """MRMR feature selection for a classification task
 
     Parameters
@@ -212,6 +212,10 @@ def mrmr_classif(bq_client, table_id, K, target_column,
         Domain is defined by the string preceding the first underscore:
         for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
 
+    show_progress: bool (optional, default=True)
+        If False, no progress bar is displayed.
+        If True, a TQDM progress bar shows the number of features processed.
+
     Returns
     -------
     selected_features: list of str
@@ -235,12 +239,13 @@ def mrmr_classif(bq_client, table_id, K, target_column,
 
     selected_features = mrmr_base(K=K, relevance_func=f_classif, redundancy_func=correlation,
                                   relevance_args=relevance_args, redundancy_args=redundancy_args,
-                                  denominator_func=denominator_func, only_same_domain=only_same_domain)
+                                  denominator_func=denominator_func, only_same_domain=only_same_domain,
+                                  show_progress=show_progress)
     return selected_features
 
 
 def mrmr_regression(bq_client, table_id, target_column, K,
-    features=None, denominator='mean', only_same_domain=False):
+    features=None, denominator='mean', only_same_domain=False, show_progress=True):
     """MRMR feature selection for a regression task
 
     Parameters
@@ -272,6 +277,10 @@ def mrmr_regression(bq_client, table_id, target_column, K,
         Domain is defined by the string preceding the first underscore:
         for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
 
+    show_progress: bool (optional, default=True)
+        If False, no progress bar is displayed.
+        If True, a TQDM progress bar shows the number of features processed.
+
     Returns
     -------
     selected: list of str
@@ -294,6 +303,7 @@ def mrmr_regression(bq_client, table_id, target_column, K,
 
     selected_features = mrmr_base(K=K, relevance_func=f_regression, redundancy_func=correlation,
                                   relevance_args=relevance_args, redundancy_args=redundancy_args,
-                                  denominator_func=denominator_func, only_same_domain=only_same_domain)
+                                  denominator_func=denominator_func, only_same_domain=only_same_domain,
+                                  show_progress=show_progress)
 
     return selected_features
