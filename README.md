@@ -36,12 +36,13 @@ For instance, in **2019**, **Uber** engineers published a paper describing how t
 You can install this package in your environment via pip:
 
 <pre>
-pip install git+https://github.com/smazzanti/mrmr
+pip install mrmr_selection
 </pre>
 
-Alternatively, if you want to add it to a "requirements.txt" file, you can paste this line into the txt file:
+And then import it in Python through:
+
 <pre>
-git+https://github.com/smazzanti/mrmr@main#egg=mrmr
+import mrmr
 </pre>
 
 ## How to use this package
