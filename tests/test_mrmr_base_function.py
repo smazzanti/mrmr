@@ -24,6 +24,6 @@ def test_mrmr_base():
     selected_features = mrmr.mrmr_base(
         K=100, relevance_func=relevance_func, redundancy_func=redundancy_func,
         relevance_args={}, redundancy_args={},
-        denominator_func=np.mean, only_same_domain=False)
+        denominator_func=np.mean, only_same_domain=False, show_progress=True)
 
     assert selected_features == ['first', 'second', 'third']

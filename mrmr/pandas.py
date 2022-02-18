@@ -77,7 +77,7 @@ def mrmr_classif(
         X, y, K,
         relevance='f', redundancy='c', denominator='mean',
         cat_features=[], cat_encoding='leave_one_out',
-        only_same_domain=False
+        only_same_domain=False, show_progress=True
 ):
     """MRMR feature selection for a classification task
 
@@ -124,6 +124,10 @@ def mrmr_classif(
         Domain is defined by the string preceding the first underscore:
         for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
 
+    show_progress: bool (optional, default=True)
+        If False, no progress bar is displayed.
+        If True, a TQDM progress bar shows the number of features processed.
+
     Returns
     -------
     selected_features: list of str
@@ -144,7 +148,8 @@ def mrmr_classif(
 
     selected_features = mrmr_base(K=K, relevance_func=relevance_func, redundancy_func=redundancy_func,
                                   relevance_args=relevance_args, redundancy_args=redundancy_args,
-                                  denominator_func=denominator_func, only_same_domain=only_same_domain)
+                                  denominator_func=denominator_func, only_same_domain=only_same_domain,
+                                  show_progress=show_progress)
 
     return selected_features
 
@@ -153,7 +158,7 @@ def mrmr_regression(
         X, y, K,
         relevance='f', redundancy='c', denominator='mean',
         cat_features=[], cat_encoding='leave_one_out',
-        only_same_domain=False
+        only_same_domain=False, show_progress=True
 ):
     """MRMR feature selection for a regression task
 
@@ -200,6 +205,10 @@ def mrmr_regression(
         Domain is defined by the string preceding the first underscore:
         for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
 
+    show_progress: bool (optional, default=True)
+        If False, no progress bar is displayed.
+        If True, a TQDM progress bar shows the number of features processed.
+
     Returns
     -------
     selected_features: list of str
@@ -219,6 +228,7 @@ def mrmr_regression(
 
     selected_features = mrmr_base(K=K, relevance_func=relevance_func, redundancy_func=redundancy_func,
                                   relevance_args=relevance_args, redundancy_args=redundancy_args,
-                                  denominator_func=denominator_func, only_same_domain=only_same_domain)
+                                  denominator_func=denominator_func, only_same_domain=only_same_domain,
+                                  show_progress=show_progress)
 
     return selected_features

@@ -90,7 +90,8 @@ def f_classif(target_column, features, df):
     return f
 
 
-def mrmr_classif(df, K, target_column, features=None, denominator='mean', only_same_domain=False):
+def mrmr_classif(df, K, target_column, features=None, denominator='mean', only_same_domain=False,
+                 show_progress=True):
     """MRMR feature selection for a classification task
 
     Parameters
@@ -118,6 +119,10 @@ def mrmr_classif(df, K, target_column, features=None, denominator='mean', only_s
         Domain is defined by the string preceding the first underscore:
         for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
 
+    show_progress: bool (optional, default=True)
+        If False, no progress bar is displayed.
+        If True, a TQDM progress bar shows the number of features processed.
+
     Returns
     -------
     selected_features: list of str
@@ -141,11 +146,13 @@ def mrmr_classif(df, K, target_column, features=None, denominator='mean', only_s
 
     selected_features = mrmr_base(K=K, relevance_func=f_classif, redundancy_func=correlation,
                                   relevance_args=relevance_args, redundancy_args=redundancy_args,
-                                  denominator_func=denominator_func, only_same_domain=only_same_domain)
+                                  denominator_func=denominator_func, only_same_domain=only_same_domain,
+                                  show_progress=show_progress)
     return selected_features
 
 
-def mrmr_regression(df, target_column, K, features=None, denominator='mean', only_same_domain=False):
+def mrmr_regression(df, target_column, K, features=None, denominator='mean', only_same_domain=False,
+                    show_progress=True):
     """MRMR feature selection for a regression task
 
     Parameters
@@ -173,6 +180,10 @@ def mrmr_regression(df, target_column, K, features=None, denominator='mean', onl
         Domain is defined by the string preceding the first underscore:
         for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
 
+    show_progress: bool (optional, default=True)
+        If False, no progress bar is displayed.
+        If True, a TQDM progress bar shows the number of features processed.
+
     Returns
     -------
     selected: list of str
@@ -196,6 +207,7 @@ def mrmr_regression(df, target_column, K, features=None, denominator='mean', onl
 
     selected_features = mrmr_base(K=K, relevance_func=f_regression, redundancy_func=correlation,
                                   relevance_args=relevance_args, redundancy_args=redundancy_args,
-                                  denominator_func=denominator_func, only_same_domain=only_same_domain)
+                                  denominator_func=denominator_func, only_same_domain=only_same_domain,
+                                  show_progress=show_progress)
 
     return selected_features
