@@ -215,4 +215,4 @@ def mrmr_regression(df, target_column, K, features=None, denominator='mean', onl
     return mrmr_base(K=K, relevance_func=f_regression, redundancy_func=correlation,
                      relevance_args=relevance_args, redundancy_args=redundancy_args,
                      denominator_func=denominator_func, only_same_domain=only_same_domain,
-                     show_progress=show_progress)
+                     return_scores=return_scores, show_progress=show_progress)
