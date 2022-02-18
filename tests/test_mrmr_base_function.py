@@ -1,7 +1,6 @@
 import mrmr
 import numpy as np
 import pandas as pd
-import pytest
 
 variables = ['drop', 'second', 'third', 'first']
 
@@ -17,13 +16,26 @@ redundancy = pd.DataFrame([
 def relevance_func():
     return relevance
 
-def redundancy_func(target_column,features):
+def redundancy_func(target_column, features):
     return redundancy.loc[features, target_column]
 
 def test_mrmr_base():
     selected_features = mrmr.mrmr_base(
         K=100, relevance_func=relevance_func, redundancy_func=redundancy_func,
         relevance_args={}, redundancy_args={},
-        denominator_func=np.mean, only_same_domain=False, show_progress=True)
+        denominator_func=np.mean, only_same_domain=False,
+        return_scores=False, show_progress=True)
 
     assert selected_features == ['first', 'second', 'third']
+
+def test_mrmr_base():
+    selected_features, relevance_out, redundancy_out = mrmr.mrmr_base(
+        K=100, relevance_func=relevance_func, redundancy_func=redundancy_func,
+        relevance_args={}, redundancy_args={},
+        denominator_func=np.mean, only_same_domain=False,
+        return_scores=True, show_progress=True)
+
+    print(redundancy_out)
+    assert selected_features == ['first', 'second', 'third']
+    assert isinstance(relevance_out, pd.Series)
+    assert isinstance(redundancy_out, pd.DataFrame)

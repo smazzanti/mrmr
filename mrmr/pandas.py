@@ -77,7 +77,8 @@ def mrmr_classif(
         X, y, K,
         relevance='f', redundancy='c', denominator='mean',
         cat_features=[], cat_encoding='leave_one_out',
-        only_same_domain=False, show_progress=True
+        only_same_domain=False, return_scores=False,
+        show_progress=True
 ):
     """MRMR feature selection for a classification task
 
@@ -124,6 +125,10 @@ def mrmr_classif(
         Domain is defined by the string preceding the first underscore:
         for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
 
+    return_scores: bool (optional, default=False)
+        If False, only the list of selected features is returned.
+        If True, a tuple containing (list of selected features, relevance, redundancy) is returned.
+
     show_progress: bool (optional, default=True)
         If False, no progress bar is displayed.
         If True, a TQDM progress bar shows the number of features processed.
@@ -146,19 +151,17 @@ def mrmr_classif(
     relevance_args = {'X': X, 'y': y}
     redundancy_args = {'X': X}
 
-    selected_features = mrmr_base(K=K, relevance_func=relevance_func, redundancy_func=redundancy_func,
-                                  relevance_args=relevance_args, redundancy_args=redundancy_args,
-                                  denominator_func=denominator_func, only_same_domain=only_same_domain,
-                                  show_progress=show_progress)
-
-    return selected_features
+    return mrmr_base(K=K, relevance_func=relevance_func, redundancy_func=redundancy_func,
+                     relevance_args=relevance_args, redundancy_args=redundancy_args,
+                     denominator_func=denominator_func, only_same_domain=only_same_domain,
+                     return_scores=return_scores, show_progress=show_progress)
 
 
 def mrmr_regression(
         X, y, K,
         relevance='f', redundancy='c', denominator='mean',
         cat_features=[], cat_encoding='leave_one_out',
-        only_same_domain=False, show_progress=True
+        only_same_domain=False, return_scores=False, show_progress=True
 ):
     """MRMR feature selection for a regression task
 
@@ -205,6 +208,10 @@ def mrmr_regression(
         Domain is defined by the string preceding the first underscore:
         for instance "cusinfo_age" and "cusinfo_income" belong to the same domain, whereas "age" and "income" don't.
 
+    return_scores: bool (optional, default=False)
+        If False, only the list of selected features is returned.
+        If True, a tuple containing (list of selected features, relevance, redundancy) is returned.
+
     show_progress: bool (optional, default=True)
         If False, no progress bar is displayed.
         If True, a TQDM progress bar shows the number of features processed.
@@ -226,9 +233,7 @@ def mrmr_regression(
     relevance_args = {'X': X, 'y': y}
     redundancy_args = {'X': X}
 
-    selected_features = mrmr_base(K=K, relevance_func=relevance_func, redundancy_func=redundancy_func,
-                                  relevance_args=relevance_args, redundancy_args=redundancy_args,
-                                  denominator_func=denominator_func, only_same_domain=only_same_domain,
-                                  show_progress=show_progress)
-
-    return selected_features
+    return mrmr_base(K=K, relevance_func=relevance_func, redundancy_func=redundancy_func,
+                     relevance_args=relevance_args, redundancy_args=redundancy_args,
+                     denominator_func=denominator_func, only_same_domain=only_same_domain,
+                     return_scores=return_scores, show_progress=show_progress)
