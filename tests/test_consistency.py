@@ -5,7 +5,7 @@ from tests.utils import pd_dataframe2bq_query
 import mrmr
 
 spark_session = pyspark.sql.SparkSession(pyspark.context.SparkContext())
-bq_client = Client()
+bq_client = Client.from_service_account_json(json_credentials_path='google_credentials.json')
 
 columns = ["target_classif", "target_regression", "some_null", "feature_a", "constant", "feature_b"]
 target_column_classif = "target_classif"

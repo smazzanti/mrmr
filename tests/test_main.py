@@ -28,14 +28,13 @@ def test_mrmr_base():
 
     assert selected_features == ['first', 'second', 'third']
 
-def test_mrmr_base():
+def test_mrmr_base_with_return_scores():
     selected_features, relevance_out, redundancy_out = mrmr.mrmr_base(
         K=100, relevance_func=relevance_func, redundancy_func=redundancy_func,
         relevance_args={}, redundancy_args={},
         denominator_func=np.mean, only_same_domain=False,
         return_scores=True, show_progress=True)
 
-    print(redundancy_out)
     assert selected_features == ['first', 'second', 'third']
     assert isinstance(relevance_out, pd.Series)
     assert isinstance(redundancy_out, pd.DataFrame)
