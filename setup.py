@@ -5,7 +5,7 @@ with open("README.md", encoding="utf8") as f:
 
 setup(
     name='mrmr_selection',
-    version='0.2.1',
+    version='0.2.2',
     description='minimum-Redundancy-Maximum-Relevance algorithm for feature selection',
     long_description=long_description,
     long_description_content_type='text/markdown',
