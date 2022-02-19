@@ -19,7 +19,7 @@ def relevance_func():
 def redundancy_func(target_column, features):
     return redundancy.loc[features, target_column]
 
-def test_mrmr_base():
+def test_mrmr_base_without_scores():
     selected_features = mrmr.mrmr_base(
         K=100, relevance_func=relevance_func, redundancy_func=redundancy_func,
         relevance_args={}, redundancy_args={},
@@ -28,7 +28,7 @@ def test_mrmr_base():
 
     assert selected_features == ['first', 'second', 'third']
 
-def test_mrmr_base_with_return_scores():
+def test_mrmr_base_with_scores():
     selected_features, relevance_out, redundancy_out = mrmr.mrmr_base(
         K=100, relevance_func=relevance_func, redundancy_func=redundancy_func,
         relevance_args={}, redundancy_args={},
