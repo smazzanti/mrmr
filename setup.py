@@ -1,11 +1,12 @@
 from setuptools import setup
+from mrmr import __version__
 
 with open("README.md", encoding="utf8") as f:
     long_description = f.read()
 
 setup(
     name='mrmr_selection',
-    version='0.2.2',
+    version=__version__,
     description='minimum-Redundancy-Maximum-Relevance algorithm for feature selection',
     long_description=long_description,
     long_description_content_type='text/markdown',
