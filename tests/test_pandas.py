@@ -29,6 +29,7 @@ def test_mrmr_classif_without_scores():
         cat_encoding="leave_one_out",
         only_same_domain=False,
         return_scores=False,
+        n_jobs=1000,
         show_progress=True)
 
     assert set(selected_features) == set(["some_null", "feature_a", "feature_b"])
@@ -46,6 +47,7 @@ def test_mrmr_classif_with_scores():
         cat_encoding="leave_one_out",
         only_same_domain=False,
         return_scores=True,
+        n_jobs=1000,
         show_progress=True
     )
 
@@ -66,6 +68,7 @@ def test_mrmr_regression_without_scores():
         cat_encoding="leave_one_out",
         only_same_domain=False,
         return_scores=False,
+        n_jobs=1000,
         show_progress=True)
 
     assert set(selected_features) == set(["some_null", "feature_a"])
@@ -83,6 +86,7 @@ def test_mrmr_regression_with_scores():
         cat_encoding="leave_one_out",
         only_same_domain=False,
         return_scores=True,
+        n_jobs=1000,
         show_progress=True)
 
     assert set(selected_features) == set(["some_null", "feature_a"])
