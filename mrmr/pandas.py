@@ -1,4 +1,4 @@
-import functool
+import functools
 from joblib import Parallel, delayed
 from multiprocessing import cpu_count
 import numpy as np
