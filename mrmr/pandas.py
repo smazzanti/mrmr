@@ -1,3 +1,4 @@
+import functool
 from joblib import Parallel, delayed
 from multiprocessing import cpu_count
 import numpy as np
@@ -9,8 +10,8 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from .main import mrmr_base
 
 
-def parallel_df(func, df, series):
-    n_jobs = min(cpu_count(), len(df.columns))
+def parallel_df(func, df, series, n_jobs):
+    n_jobs = min(cpu_count(), len(df.columns)) if n_jobs == -1 else min(cpu_count(), n_jobs)
     col_chunks = np.array_split(range(len(df.columns)), n_jobs)
     lst = Parallel(n_jobs=n_jobs)(
         delayed(func)(df.iloc[:, col_chunk], series)
@@ -39,12 +40,12 @@ def _f_regression(X, y):
     return X.apply(lambda col: _f_regression_series(col, y)).fillna(0.0)
 
 
-def f_classif(X, y):
-    return parallel_df(_f_classif, X, y)
+def f_classif(X, y, n_jobs):
+    return parallel_df(_f_classif, X, y, n_jobs=n_jobs)
 
 
-def f_regression(X, y):
-    return parallel_df(_f_regression, X, y)
+def f_regression(X, y, n_jobs):
+    return parallel_df(_f_regression, X, y, n_jobs=n_jobs)
 
 
 def random_forest_classif(X, y):
@@ -57,10 +58,10 @@ def random_forest_regression(X, y):
     return pd.Series(forest.feature_importances_, index=X.columns)
 
 
-def correlation(target_column, features, X):
+def correlation(target_column, features, X, n_jobs):
     def _correlation(X, y):
         return X.corrwith(y).fillna(0.0)
-    return parallel_df(_correlation, X.loc[:, features], X.loc[:, target_column])
+    return parallel_df(_correlation, X.loc[:, features], X.loc[:, target_column], n_jobs=n_jobs)
 
 
 def encode_df(X, y, cat_features, cat_encoding):
@@ -78,7 +79,7 @@ def mrmr_classif(
         relevance='f', redundancy='c', denominator='mean',
         cat_features=[], cat_encoding='leave_one_out',
         only_same_domain=False, return_scores=False,
-        show_progress=True
+        n_jobs=-1, show_progress=True
 ):
     """MRMR feature selection for a classification task
 
@@ -128,6 +129,10 @@ def mrmr_classif(
     return_scores: bool (optional, default=False)
         If False, only the list of selected features is returned.
         If True, a tuple containing (list of selected features, relevance, redundancy) is returned.
+        
+    n_jobs: int (optional, default=-1)
+        Maximum number of workers to use. Only used when relevance = "f" or redundancy = "corr".
+        If -1, use as many workers as min(cpu count, number of features).
 
     show_progress: bool (optional, default=True)
         If False, no progress bar is displayed.
@@ -142,9 +147,9 @@ def mrmr_classif(
     if cat_features:
         X = encode_df(X=X, y=y, cat_features=cat_features, cat_encoding=cat_encoding)
 
-    relevance_func = f_classif if relevance=='f' else (
+    relevance_func = functools.partial(f_classif, n_jobs=n_jobs) if relevance=='f' else (
                      random_forest_classif if relevance=='rf' else relevance)
-    redundancy_func = correlation if redundancy == 'c' else redundancy
+    redundancy_func = functools.partial(correlation, n_jobs=n_jobs) if redundancy == 'c' else redundancy
     denominator_func = np.mean if denominator == 'mean' else (
                        np.max if denominator == 'max' else denominator)
 
@@ -161,7 +166,8 @@ def mrmr_regression(
         X, y, K,
         relevance='f', redundancy='c', denominator='mean',
         cat_features=[], cat_encoding='leave_one_out',
-        only_same_domain=False, return_scores=False, show_progress=True
+        only_same_domain=False, return_scores=False, 
+        n_jobs=-1, show_progress=True
 ):
     """MRMR feature selection for a regression task
 
@@ -211,6 +217,10 @@ def mrmr_regression(
     return_scores: bool (optional, default=False)
         If False, only the list of selected features is returned.
         If True, a tuple containing (list of selected features, relevance, redundancy) is returned.
+        
+    n_jobs: int (optional, default=-1)
+        Maximum number of workers to use. Only used when relevance = "f" or redundancy = "corr".
+        If -1, use as many workers as min(cpu count, number of features).
 
     show_progress: bool (optional, default=True)
         If False, no progress bar is displayed.
@@ -224,9 +234,9 @@ def mrmr_regression(
     if cat_features:
         X = encode_df(X=X, y=y, cat_features=cat_features, cat_encoding=cat_encoding)
 
-    relevance_func = f_regression if relevance=='f' else (
+    relevance_func = functools.partial(f_regression, n_jobs=n_jobs) if relevance=='f' else (
                      random_forest_regression if relevance=='rf' else relevance)
-    redundancy_func = correlation if redundancy == 'c' else redundancy
+    redundancy_func = functools.partial(correlation, n_jobs=n_jobs) if redundancy == 'c' else redundancy
     denominator_func = np.mean if denominator == 'mean' else (
                        np.max if denominator == 'max' else denominator)
 
