@@ -6,6 +6,7 @@ import pandas as pd
 import category_encoders as ce
 from sklearn.feature_selection import f_classif as sklearn_f_classif
 from sklearn.feature_selection import f_regression as sklearn_f_regression
+from scipy.stats import ks_2samp
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from .main import mrmr_base
 
@@ -46,6 +47,22 @@ def f_classif(X, y, n_jobs):
 
 def f_regression(X, y, n_jobs):
     return parallel_df(_f_regression, X, y, n_jobs=n_jobs)
+
+
+def _ks_classif(X, y):
+    def _ks_classif_series(x, y):
+        x_not_na = ~ x.isna()
+        if x_not_na.sum() == 0:
+            return 0
+        x = x[x_not_na]
+        y = y[x_not_na]
+        return x.groupby(y).apply(lambda s: ks_2samp(s, x[y != s.name])[0]).mean()
+
+    return X.apply(lambda col: _ks_classif_series(col, y)).fillna(0.0)
+
+
+def ks_classif(X, y, n_jobs):
+    return parallel_df(_ks_classif, X, y, n_jobs=n_jobs)
 
 
 def random_forest_classif(X, y):
