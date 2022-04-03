@@ -116,7 +116,7 @@ def mrmr_classif(
 
     relevance: str or callable
         Relevance method.
-        If string, name of method, supported: "f" (f-statistic), "rf" (random forest).
+        If string, name of method, supported: "f" (f-statistic), "ks" (kolmogorov-smirnov), "rf" (random forest).
         If callable, it should take "X" and "y" as input and return a pandas.Series containing a (non-negative)
         score of relevance for each feature.
 
@@ -164,8 +164,15 @@ def mrmr_classif(
     if cat_features:
         X = encode_df(X=X, y=y, cat_features=cat_features, cat_encoding=cat_encoding)
 
-    relevance_func = functools.partial(f_classif, n_jobs=n_jobs) if relevance=='f' else (
-                     random_forest_classif if relevance=='rf' else relevance)
+    if relevance=="f":
+        relevance_func = functools.partial(f_classif, n_jobs=n_jobs)
+    elif relevance=="ks":
+        relevance_func = functools.partial(ks_classif, n_jobs=n_jobs)
+    elif relevance=="rf":
+        relevance_func = functools.partial(random_forest_classif, n_jobs=n_jobs)
+    else:
+        relevance_func = relevance
+
     redundancy_func = functools.partial(correlation, n_jobs=n_jobs) if redundancy == 'c' else redundancy
     denominator_func = np.mean if denominator == 'mean' else (
                        np.max if denominator == 'max' else denominator)

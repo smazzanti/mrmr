@@ -35,6 +35,24 @@ def test_mrmr_classif_without_scores():
     assert set(selected_features) == set(["some_null", "feature_a", "feature_b"])
 
 
+def test_mrmr_classif_ks():
+    selected_features = mrmr.pandas.mrmr_classif(
+        X=df_pandas.loc[:, features],
+        y=df_pandas.loc[:, target_column_classif],
+        K=4,
+        relevance="ks",
+        redundancy="c",
+        denominator="mean",
+        cat_features= [],
+        cat_encoding="leave_one_out",
+        only_same_domain=False,
+        return_scores=False,
+        n_jobs=1000,
+        show_progress=True)
+
+    assert set(selected_features) == set(["some_null", "feature_a", "feature_b"])
+
+
 def test_mrmr_classif_with_scores():
     selected_features, relevance, redundancy = mrmr.pandas.mrmr_classif(
         X=df_pandas.loc[:, features],
