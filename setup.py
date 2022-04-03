@@ -16,13 +16,14 @@ setup(
     license='MIT',
     packages=['mrmr'],
     install_requires=[
+        'category_encoders',
         'jinja2',
         'tqdm',
         'joblib',
         'pandas>=1.0.3',
         'numpy>=1.18.1',
         'sklearn',
-        'category_encoders'
+        'scipy',
     ],
     zip_safe=False
 )

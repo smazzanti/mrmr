@@ -169,7 +169,7 @@ def mrmr_classif(
     elif relevance=="ks":
         relevance_func = functools.partial(ks_classif, n_jobs=n_jobs)
     elif relevance=="rf":
-        relevance_func = functools.partial(random_forest_classif, n_jobs=n_jobs)
+        relevance_func = random_forest_classif
     else:
         relevance_func = relevance
 
