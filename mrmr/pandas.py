@@ -94,7 +94,7 @@ def encode_df(X, y, cat_features, cat_encoding):
 def mrmr_classif(
         X, y, K,
         relevance='f', redundancy='c', denominator='mean',
-        cat_features=[], cat_encoding='leave_one_out',
+        cat_features=None, cat_encoding='leave_one_out',
         only_same_domain=False, return_scores=False,
         n_jobs=-1, show_progress=True
 ):
@@ -189,7 +189,7 @@ def mrmr_classif(
 def mrmr_regression(
         X, y, K,
         relevance='f', redundancy='c', denominator='mean',
-        cat_features=[], cat_encoding='leave_one_out',
+        cat_features=None, cat_encoding='leave_one_out',
         only_same_domain=False, return_scores=False, 
         n_jobs=-1, show_progress=True
 ):
