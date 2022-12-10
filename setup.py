@@ -13,7 +13,7 @@ setup(
     url='https://github.com/smazzanti/mrmr',
     author='Samuele Mazzanti',
     author_email='mazzanti.sam@gmail.com',
-    license='MIT',
+    license='GNU General Public License v3.0',
     packages=['mrmr'],
     install_requires=[
         'category_encoders',
