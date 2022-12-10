@@ -22,7 +22,7 @@ setup(
         'joblib',
         'pandas>=1.0.3',
         'numpy>=1.18.1',
-        'sklearn',
+        'scikit-learn',
         'scipy',
     ],
     zip_safe=False
