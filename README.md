@@ -66,6 +66,7 @@ You want to select the best `K` features to make predictions on `y`.
 
 ```python
 # create some pandas data
+import pandas as pd
 from sklearn.datasets import make_classification
 X, y = make_classification(n_samples = 1000, n_features = 50, n_informative = 10, n_redundant = 40)
 X = pd.DataFrame(X)
