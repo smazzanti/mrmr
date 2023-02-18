@@ -47,7 +47,7 @@ import mrmr
 
 ## How to use this package
 
-This package is designed to do *mMRM* selection through different tools, depending on your needs and constraints.
+This package is designed to do *mRMR* selection through different tools, depending on your needs and constraints.
 
 Currently, the following tools are supported (others will be added):
 - **Pandas** (in-memory)
