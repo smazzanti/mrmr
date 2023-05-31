@@ -50,7 +50,8 @@ import mrmr
 This package is designed to do *mRMR* selection through different tools, depending on your needs and constraints.
 
 Currently, the following tools are supported (others will be added):
-- **Pandas** (in-memory)
+- **Pandas**
+- **Polars**
 - **Spark**
 - **Google BigQuery**
 
@@ -79,7 +80,25 @@ selected_features = mrmr_classif(X=X, y=y, K=10)
 
 Note: the output of mrmr_classif is a list containing K selected features. This is a **ranking**, therefore, if you want to make a further selection, take the first elements of this list.
 
-#### 2. Spark example
+#### 2. Polars example
+
+```python
+# create some polars data
+import polars
+data = [(1.0, 1.0, 1.0, 7.0, 1.5, -2.3), 
+        (2.0, None, 2.0, 7.0, 8.5, 6.7), 
+        (2.0, None, 3.0, 7.0, -2.3, 4.4),
+        (3.0, 4.0, 3.0, 7.0, 0.0, 0.0),
+        (4.0, 5.0, 4.0, 7.0, 12.1, -5.2)]
+columns = ["target", "some_null", "feature", "constant", "other_feature", "another_feature"]
+df_polars = polars.DataFrame(data=data, schema=columns)
+
+# select top 2 features using mRMR
+import mrmr
+selected_features = mrmr.polars.mrmr_regression(df=df_polars, target_column="target", K=2)
+```
+
+#### 3. Spark example
 
 ```python
 # create some spark data
@@ -98,7 +117,7 @@ import mrmr
 selected_features = mrmr.spark.mrmr_regression(df=df_spark, target_column="target", K=2)
 ```
 
-#### 3. Google BigQuery example
+#### 4. Google BigQuery example
 
 ```python
 # initialize BigQuery client
