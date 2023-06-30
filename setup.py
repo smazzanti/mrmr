@@ -24,6 +24,7 @@ setup(
         'numpy>=1.18.1',
         'scikit-learn',
         'scipy',
+        'polars>=0.12.5'
     ],
     zip_safe=False
 )
