@@ -8,12 +8,12 @@ target_column_regression = "target_regression"
 features = ["some_null", "feature_a", "constant", "feature_b"]
 
 df_polars = polars.DataFrame()
-df_polars = df_polars.with_column(polars.Series(['a','a','b','b','b']).alias("target_classif"))
-df_polars = df_polars.with_column(polars.Series([1.0,2.0,3.0,4.0,5.0]).alias("target_regression"))
-df_polars = df_polars.with_column(polars.Series([1.0,None,None,4.0,5.0]).alias("some_null"))
-df_polars = df_polars.with_column(polars.Series([2.0,2.0,3.0,3.0,4.0]).alias("feature_a"))
-df_polars = df_polars.with_column(polars.Series([7.0]*5).alias("constant"))
-df_polars = df_polars.with_column(polars.Series([3.0,2.0,1.0,2.0,3.0]).alias("feature_b"))
+df_polars = df_polars.with_columns(polars.Series(['a','a','b','b','b']).alias("target_classif")) 
+df_polars = df_polars.with_columns(polars.Series([1.0,2.0,3.0,4.0,5.0]).alias("target_regression"))
+df_polars = df_polars.with_columns(polars.Series([1.0,None,None,4.0,5.0]).alias("some_null"))
+df_polars = df_polars.with_columns(polars.Series([2.0,2.0,3.0,3.0,4.0]).alias("feature_a"))
+df_polars = df_polars.with_columns(polars.Series([7.0]*5).alias("constant"))
+df_polars = df_polars.with_columns(polars.Series([3.0,2.0,1.0,2.0,3.0]).alias("feature_b"))
 
 
 def test_mrmr_classif_without_scores():
