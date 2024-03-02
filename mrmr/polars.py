@@ -40,7 +40,7 @@ def correlation(target_column, features, df):
     out = pd.Series(features, index=features).apply(
         lambda feature: df \
             .filter(~(pl.col(feature).is_null()) & ~(pl.col(target_column).is_null())) \
-            .select(pl.pearson_corr(feature, target_column))[0,0]
+            .select(pl.corr(feature, target_column, method="pearson"))[0,0]
     ).astype(float).fillna(0.0)
     return out
 
