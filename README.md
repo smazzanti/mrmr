@@ -35,9 +35,9 @@ For instance, in **2019**, **Uber** engineers published a paper describing how t
 
 You can install this package in your environment via pip:
 
-<pre>
+```bash
 pip install mrmr_selection
-</pre>
+```
 
 And then import it in Python through:
 
