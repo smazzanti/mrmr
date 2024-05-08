@@ -41,9 +41,9 @@ pip install mrmr_selection
 
 And then import it in Python through:
 
-<pre>
+```python
 import mrmr
-</pre>
+```
 
 ## How to use this package
 
