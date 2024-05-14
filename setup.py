@@ -24,9 +24,9 @@ setup(
         'numpy>=1.18.1',
         'scikit-learn',
         'scipy',
+        'polars>=0.12.5',
     ],
     extras_require={
-        'polars': ['polars>=0.12.5'],
         'pyspark': ['pyspark>=3.4.1'],
         'bigquery': ['google.cloud.bigquery']
     },
