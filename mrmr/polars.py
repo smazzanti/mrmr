@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import polars as pl
-from .main import groupstats2fstat, mrmr_base
+from mrmr.main import groupstats2fstat, mrmr_base
 
 
 def get_numeric_features(df, target_column):

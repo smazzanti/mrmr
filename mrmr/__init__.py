@@ -1,8 +1,11 @@
-from . import bigquery
-from . import pandas
-from . import polars
-from . import spark
-from .pandas import mrmr_classif, mrmr_regression
-from .main import mrmr_base
+from importlib.metadata import version
 
-__version__ = "0.2.8"
+from mrmr import bigquery
+from mrmr import pandas
+# trigger: zsh: illegal hardware instructions if used with wrong package
+# from mrmr import polars
+from mrmr import spark
+from mrmr.pandas import mrmr_classif, mrmr_regression
+from mrmr.main import mrmr_base
+
+_version__ = version('mrmr_selection')

@@ -8,7 +8,7 @@ from sklearn.feature_selection import f_classif as sklearn_f_classif
 from sklearn.feature_selection import f_regression as sklearn_f_regression
 from scipy.stats import ks_2samp
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from .main import mrmr_base
+from mrmr.main import mrmr_base
 
 
 def parallel_df(func, df, series, n_jobs):
