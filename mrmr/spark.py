@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from .main import groupstats2fstat, mrmr_base
+from mrmr.main import groupstats2fstat, mrmr_base
 
 
 def get_numeric_features(df, target_column):

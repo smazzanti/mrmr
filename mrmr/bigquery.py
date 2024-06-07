@@ -1,6 +1,6 @@
 import jinja2
 import numpy as np
-from .main import mrmr_base, groupstats2fstat
+from mrmr.main import mrmr_base, groupstats2fstat
 
 
 def get_numeric_features(bq_client, table_id, target_column):

@@ -1,8 +1,8 @@
-from . import bigquery
-from . import pandas
-from . import polars
-from . import spark
-from .pandas import mrmr_classif, mrmr_regression
-from .main import mrmr_base
+from mrmr import bigquery
+from mrmr import pandas
+from mrmr import polars
+from mrmr import spark
+from mrmr.pandas import mrmr_classif, mrmr_regression
+from mrmr.main import mrmr_base
 
 __version__ = "0.2.8"
