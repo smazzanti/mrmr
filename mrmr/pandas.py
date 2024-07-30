@@ -179,8 +179,7 @@ def mrmr_regression(
         relevance='f', redundancy='c', denominator='mean',
         cat_features=None, cat_encoding='leave_one_out',
         only_same_domain=False, return_scores=False,
-        n_jobs=-1, show_progress=True
-):
+        n_jobs=-1, show_progress=True, split_col=None):
     """MRMR feature selection for a regression task
     Parameters
     ----------
@@ -225,6 +224,8 @@ def mrmr_regression(
     show_progress: bool (optional, default=True)
         If False, no progress bar is displayed.
         If True, a TQDM progress bar shows the number of features processed.
+    split_col: boolean pd.Series (optional, default=None)
+        column on which to split data
     Returns
     -------
     selected_features: list of str
@@ -240,7 +241,7 @@ def mrmr_regression(
         np.max if denominator == 'max' else denominator)
 
     relevance_args = {'X': X, 'y': y}
-    redundancy_args = {'X': X}
+    redundancy_args = {'X': X, 'split_col': split_col}
 
     return mrmr_base(K=K, relevance_func=relevance_func, redundancy_func=redundancy_func,
                      relevance_args=relevance_args, redundancy_args=redundancy_args,
